@@ -1,0 +1,20 @@
+version: '3.7'
+
+services:
+  js-rabbit-mq:
+    container_name: js-rabbit-mq
+    image: rabbitmq:3.6-management-alpine
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - rabitmq:/etc/rabbitmq/
+    networks:
+      - js-network
+
+volumes:
+  rabitmq:
+
+networks:
+  js-network:
+    driver: bridge
