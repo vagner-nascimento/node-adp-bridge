@@ -1,0 +1,28 @@
+{
+    "defaultSeverity": "error",
+    "env": {
+        "commonjs": true,
+        "es6": true,
+        "node": true
+    },
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/eslint-recommended",
+        "plugin:@typescript-eslint/recommended"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaVersion": 8
+    },
+    "plugins": [
+        "@typescript-eslint"
+    ],
+    "rules": {
+        "no-console": false,
+        "semi": ["error", "never"],
+        "quotes": ["error", "double"],
+        "comma-spacing": ["error", { "before": false, "after": true }],
+        "indent": ["error", 4],
+        "linebreak-style": ["error", "unix"]
+    }
+}
