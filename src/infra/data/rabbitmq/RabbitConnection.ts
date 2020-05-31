@@ -32,13 +32,21 @@ class RabbitConnection {
     }
 
     // TODO msgHandler: create a type to this func
-    public async subscribe(queueName, msgHandler): Promise<void> {
+    public async subscribe(queue: string, msgHandler: any): Promise<void> {
         const ch = await this.newChannel()
         
-        ch.assertQueue(queueName, { durable: false })
-        ch.consume(queueName, msgHandler, { noAck: true })
+        ch.assertQueue(queue, { durable: false })
+        ch.consume(queue, msgHandler, { noAck: true })
 
-        console.log(`subscribed on queue ${queueName}`)
+        console.log(`subscribed on queue ${queue}`)
+    }
+
+    // TODO realise how to pub in JSON format
+    public async publish(queue: string, data: string) {
+        const ch = await this.newChannel()
+
+        ch.assertQueue(queue, { durable: false })
+        ch.sendToQueue(queue, Buffer.from(data))
     }
 
     private async newChannel(): Promise<any> {
