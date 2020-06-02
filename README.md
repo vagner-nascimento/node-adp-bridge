@@ -5,7 +5,7 @@ This kind of adapter receives data from topics or queues (one or many), transfor
 
 # requirements
     - [x] consume topics
-    - [ ] publish on topics
+    - [x] publish on topics
     - [ ] call http clients
     - [x] expose por 3000 to check health
     - use in data models:
