@@ -2,7 +2,7 @@ import newExpress from "express"
 import healthRoutes from "./HealthRoutes"
 
 export default (): Promise<any> => {
-    const port = 3000 // TODO get port from env configs
+    const port = 3000 // TODO put infos into app confs
     const express = newExpress()
     
     return new Promise((resolve, reject) => {

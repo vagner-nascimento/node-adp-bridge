@@ -1,5 +1,8 @@
 import AccountDataHandler from '../interfaces/AccountDataHandler';
-import { Account } from '../entities/Account';
+
+import CreateAccount from '../usecases/CreateAccount';
+
+import Account from '../entities/Account';
 
 export class AccountAdapter {
     constructor(repository: AccountDataHandler) {
@@ -7,10 +10,9 @@ export class AccountAdapter {
     }
 
     private repo: AccountDataHandler
-
-    // TODO realise how to recive a properly account
+    
     public async addAccount(data: any): Promise<Account> {
-        const acc = new Account(data.id)
+        const acc = CreateAccount(data)
                 
         return await this.repo.Save(acc)
     }

@@ -1,12 +1,11 @@
 import amqp from "amqplib"
 
-// TODO test singleton rabbit conn
 // TODO properly handle errors
 class RabbitConnection {
     private constructor() {
     }
 
-    private conn
+    private conn: any
     private static instance: RabbitConnection
 
     private async connect(): Promise<void> {
@@ -31,7 +30,6 @@ class RabbitConnection {
         return RabbitConnection.instance
     }
 
-    // TODO msgHandler: create a type to this func
     public async subscribe(queue: string, msgHandler: any): Promise<void> {
         const ch = await this.newChannel()
         
@@ -41,8 +39,7 @@ class RabbitConnection {
         console.log(`subscribed on queue ${queue}`)
     }
 
-    // TODO realise how to pub in JSON format
-    public async publish(queue: string, data: string) {
+    public async publish(queue: string, data: any): Promise<void> {
         const ch = await this.newChannel()
 
         ch.assertQueue(queue, { durable: false })
