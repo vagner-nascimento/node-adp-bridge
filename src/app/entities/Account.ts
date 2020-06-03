@@ -1,6 +1,7 @@
+import Seller from './Seller';
 import Merchant from './Merchant';
 import AccountType from "./AccountType"
-import Seller from './Seller';
+import MerchantAccount from './MerchantAccount';
 
 export default class Account {
     constructor(id: string, name: string, type: string, merchantId: string = null, country: string = null) {
@@ -9,6 +10,7 @@ export default class Account {
         this.type = type
         this.merchant_id = merchantId
         this.country = country
+        this.financial_accounts = []
     }
 
     public type: string
@@ -16,6 +18,7 @@ export default class Account {
     public name: string
     public merchant_id: string
     public country: string
+    public financial_accounts: MerchantAccount[]
 }
 
 export function makeAccountFromMerchant(merchant: Merchant): Account {

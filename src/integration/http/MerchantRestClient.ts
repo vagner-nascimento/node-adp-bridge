@@ -1,12 +1,12 @@
 import httpStatus from "http-status"
 
-import RestClient from './RestClient';
+import HttpClient from '../../infra/data/http/HttpClient';
 
 import { isRequestFailed } from "./response/HttpRespose"
 
 import Merchant from '../../app/entities/Merchant';
 
-export default class MerchantRestClient extends RestClient {
+export default class MerchantRestClient extends HttpClient {
     constructor({ baseUrl, timeout }) {
         super({ baseUrl, timeout })
     }

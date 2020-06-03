@@ -1,6 +1,7 @@
 import axios from "axios"
+import httpStatus from 'http-status';
 
-export default class RestClient {
+export default class HttpClient {
     constructor({ baseUrl, timeout = 10000 }) {
         this.instance = axios.create({
             baseURL: baseUrl,
@@ -23,10 +24,16 @@ export default class RestClient {
     ): Promise<any> {
         try {
             return await this.instance({ method, headers, url, params, data })
-        } catch(err) {
-            // TODO realise how to handle this error
-            if(err.isAxiosError) return { error: err, status: err.response.status}
-            return err.response || err.request
+        } catch(error) {
+            // TODO properly handle axios errors
+            if(error.isAxiosError) {
+                if(error.response)
+                    return { error, status: error.response.status, data: null }
+
+                return { error, status: httpStatus.SERVICE_UNAVAILABLE, data: null }
+            }
+
+            return { error, status: httpStatus.INTERNAL_SERVER_ERROR, data: null }
         }
     }
 }
