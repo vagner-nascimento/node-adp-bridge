@@ -5,7 +5,7 @@ import { Subscription } from '../../../infra/repositories/AmqpRepository';
 // TODO put infos into app confs
 export class MerchantSub implements Subscription {
     getTopic(): string {
-        return "q-merchant"
+        return "q-merchants"
     }
 
     getHandler(): any {

@@ -11,8 +11,8 @@ class SingletRabbitConn {
     private async connect(): Promise<void> {
         try {
             console.log("connecting on rabbitmq")
-
-            this.conn = await amqp.connect("amqp://guest:guest@localhost:5672")
+            // TODO put conn str on env config
+            this.conn = await amqp.connect("amqp://guest:guest@js-rabbit-mq:5672")
 
             console.log("successfully connected on rabbitmq")
         } catch(err) {

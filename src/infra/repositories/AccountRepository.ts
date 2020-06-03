@@ -13,8 +13,8 @@ import MerchantsAccountsClient from '../../integration/http/MerchantsAccountsCli
 // TODO put infos into app confs
 export class AccountRepository implements AccountDataHandler {
     constructor() {
-        this.merchantCli = new MerchantRestClient({ baseUrl: "http://localhost:4000/merchants", timeout: 10000 })
-        this.merchantAccsCli = new MerchantsAccountsClient({ baseUrl: "http://localhost:4000/merchant-accounts", timeout: 10000})
+        this.merchantCli = new MerchantRestClient({ baseUrl: "http://rest-mock:4000/merchants", timeout: 10000 })
+        this.merchantAccsCli = new MerchantsAccountsClient({ baseUrl: "http://rest-mock:4000/merchant-accounts", timeout: 10000})
     }
 
     private merchantCli: MerchantRestClient
@@ -22,7 +22,7 @@ export class AccountRepository implements AccountDataHandler {
 
     async Save(acc: Account): Promise<Account> {
         const conn = await SingletRabbitConn.getInstance()
-        await conn.publish("q-account", JSON.stringify(acc))
+        await conn.publish("q-accounts", JSON.stringify(acc))
         
         console.log("account saved ", acc)
 

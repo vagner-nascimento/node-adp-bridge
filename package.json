@@ -7,7 +7,8 @@
         "node": "f>=10.13.x <11.0.0"
     },
     "scripts": {
-        "dev": "tsc && node dist/main.js",
+        "tsc": "tsc -p tsconfig.json",
+        "dev": "tsc -p tsconfig.json && node dist/main.js",
         "test": "echo 'no test specified && exit 1'"
     },
     "repository": {

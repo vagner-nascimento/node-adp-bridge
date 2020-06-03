@@ -1,0 +1,49 @@
+version: '3.7'
+
+services:
+  js-app:
+    container_name: js-app
+    build:
+      context: ..
+      dockerfile: AppDockerFile
+    depends_on:
+      - js-rabbit-mq
+    environment:
+      - NODE_ENV=DOCKER
+    restart: on-failure
+    ports:
+      - 3000:3000
+    networks:
+      - js-network
+    command: >
+      bash -c "/scripts/wait-for-it.sh -s -t 10 js-rabbit-mq:5672 -- node /app/dist/main.js"
+
+  js-rabbit-mq:
+    container_name: js-rabbit-mq
+    image: rabbitmq:3.6-management-alpine
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - rabitmq:/etc/rabbitmq/
+    networks:
+      - js-network
+
+  rest-mock:
+    container_name: rest-mock
+    image: vimagick/json-server
+    command: -H 0.0.0.0 -p 4000 -w db.json
+    ports:
+      - 4000:4000
+    volumes:
+      - ./mock/rest:/data
+    restart: unless-stopped
+    networks:
+      - js-network
+
+volumes:
+  rabitmq:
+
+networks:
+  js-network:
+    driver: bridge
