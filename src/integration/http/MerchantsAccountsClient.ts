@@ -19,7 +19,7 @@ export default class MerchantsAccountsClient extends HttpClient {
             }
         }
 
-        const defaultError =  new Error(`${this.getCallName(this.getByMerchant)} - an erro occured on try to get the merchant`)
+        const defaultError =  new Error(`${this.getCallName(this.getByMerchant)} - an erro occured on try to get the merchant accounts`)
 
         try {
             const res = await super.get(req)
@@ -43,11 +43,48 @@ export default class MerchantsAccountsClient extends HttpClient {
             if(!Array.isArray(res.data)) throw new Error(`${this.getCallName(this.getByMerchant)} - unexpedted non array response`)
 
             return res.data.map(d => new MerchantAccount(d))
-    } catch(err) {
-        console.log(`${this.getCallName(this.getByMerchant)} - error `, err)
+        } catch(err) {
+            console.log(`${this.getCallName(this.getByMerchant)} - error `, err)
 
-        throw defaultError
+            throw defaultError
+        }
     }
+
+    async getAccount(id: string): Promise<MerchantAccount> {
+        const req = {
+            url: `/${id}`,
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }
+
+        const defaultError =  new Error(`${this.getCallName(this.getAccount)} - an erro occured on try to get the merchant accounts`)
+
+        try {
+            const res = await super.get(req)
+            if(res.status === httpStatus.NO_CONTENT) {
+                console.log(`${this.getCallName(this.getAccount)} - returned ${res.status} without data`)
+
+                return null
+            }
+
+            if(isRequestFailed(res.status)) {
+                const msg = `${this.getCallName(this.getAccount)} - request failed with status ${res.status} and error `;
+                console.log(msg, res.error)
+
+                if(res.status === httpStatus.NOT_FOUND) return null
+
+                throw defaultError
+            }
+
+            console.log(`${this.getCallName(this.getAccount)} - response data `, res.data)
+
+            return new MerchantAccount(res.data)
+        } catch(err) {
+            console.log(`${this.getCallName(this.getAccount)} - error `, err)
+
+            throw defaultError
+        }
     }
 
     private getCallName(method: any): string {

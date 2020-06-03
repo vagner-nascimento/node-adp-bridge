@@ -1,5 +1,6 @@
 {
 	"seller_id": "s_1",
     "merchant_id": "m_1",
-    "name": "MC Donnalds"
+    "name": "MC Donnalds",
+    "merchant_account_id": "acc2_m_1"
 }

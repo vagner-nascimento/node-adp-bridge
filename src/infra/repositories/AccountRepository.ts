@@ -36,4 +36,8 @@ export class AccountRepository implements AccountDataHandler {
     async GetMerchantAccounts(merchantId: string): Promise<MerchantAccount[]> {
         return await this.merchantAccsCli.getByMerchant(merchantId)
     }
+    
+    async GetMerchantAccount(accId: string): Promise<MerchantAccount> {
+        return await this.merchantAccsCli.getAccount(accId)
+    }
 }

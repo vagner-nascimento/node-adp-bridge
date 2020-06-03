@@ -14,7 +14,7 @@ export class AccountAdapter {
     
     public async addAccount(data: any): Promise<Account> {
         const acc = CreateAccount(data)
-        const doEnrichment = getEnrichmentStrategy(acc.type, this.repo)
+        const doEnrichment = getEnrichmentStrategy(acc.type, this.repo, data)
         const enrichedAccount = await doEnrichment(acc)
                 
         return await this.repo.Save(enrichedAccount)

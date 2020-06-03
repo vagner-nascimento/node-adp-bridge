@@ -5,10 +5,13 @@ import MerchantAccount from '../entities/MerchantAccount';
 
 import AccountDataHandler from '../interfaces/AccountDataHandler';
 
-const enrichSellerAccount = (acc: Account, merchant: Merchant): Account => {
+const enrichSellerAccount = (acc: Account, merchant: Merchant, mAcc: MerchantAccount): Account => {
     const lAcc = Object.assign({}, acc)    
-    if(merchant instanceof Merchant)
+    if(merchant)
         lAcc.country = merchant.country
+
+    if(mAcc)
+        lAcc.financial_accounts = [mAcc]
 
     return lAcc
 }
@@ -20,14 +23,16 @@ const enrichMerchantAccount = (acc: Account, mAccs: MerchantAccount[]): Account 
     return lAcc
 }
 
-export function getEnrichmentStrategy(accTyp: string, repo: AccountDataHandler): any {
+export function getEnrichmentStrategy(accTyp: string, repo: AccountDataHandler, originEntity: any): any {
     switch(accTyp) {
         case AccountType.SELLER:
             return async (acc: Account) => {
                 try {
+                    // TODO make these calls async
                     const merchant = await repo.GetMerchant(acc.merchant_id)
+                    const mAcc = await repo.GetMerchantAccount(originEntity.merchant_account_id)
 
-                    return enrichSellerAccount(acc, merchant)
+                    return enrichSellerAccount(acc, merchant, mAcc)
                 } catch {
                     return acc
                 }
@@ -36,6 +41,7 @@ export function getEnrichmentStrategy(accTyp: string, repo: AccountDataHandler):
             return async (acc: Account) => {
                 try {
                     const mAccs = await repo.GetMerchantAccounts(acc.id)
+
                     return enrichMerchantAccount(acc, mAccs)
                 } catch {
                     return acc
