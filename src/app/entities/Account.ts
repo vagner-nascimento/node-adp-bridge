@@ -1,7 +1,7 @@
-import Seller from './Seller';
-import Merchant from './Merchant';
+import Seller from "./Seller"
+import Merchant from "./Merchant"
 import AccountType from "./AccountType"
-import MerchantAccount from './MerchantAccount';
+import MerchantAccount from "./MerchantAccount"
 
 export default class Account {
     constructor(id: string, name: string, type: string, merchantId: string = null, country: string = null) {

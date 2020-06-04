@@ -10,7 +10,7 @@ export default (): Promise<any> => {
 
         express.listen(port, err => {
             if (err) {
-                console.log('error on srtart rest server ', err)
+                console.log("error on srtart rest server ", err)
                 reject(err)
             }
     

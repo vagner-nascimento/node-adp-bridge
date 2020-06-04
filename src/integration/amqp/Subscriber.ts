@@ -1,7 +1,7 @@
-import { MerchantSub } from './subscriptions/MerchantSub';
-import { SellerSub } from './subscriptions/SellerSub';
+import { MerchantSub } from "./subscriptions/MerchantSub"
+import { SellerSub } from "./subscriptions/SellerSub"
 
-import { subscribeAll, Subscription } from '../../infra/repositories/AmqpRepository';
+import { subscribeAll, Subscription } from "../../infra/repositories/AmqpRepository"
 
 const getSubscriptions = (): Subscription[] => {
     return [

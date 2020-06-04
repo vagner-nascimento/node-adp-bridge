@@ -1,9 +1,9 @@
-import AccountDataHandler from '../interfaces/AccountDataHandler';
+import AccountDataHandler from "../interfaces/AccountDataHandler"
 
-import CreateAccount from '../usecases/CreateAccount';
+import CreateAccount from "../usecases/CreateAccount"
 
-import Account from '../entities/Account';
-import { getEnrichmentStrategy } from '../usecases/EnrichAccountData';
+import Account from "../entities/Account"
+import { getEnrichmentStrategy } from "../usecases/EnrichAccountData"
 
 export class AccountAdapter {
     constructor(repository: AccountDataHandler) {

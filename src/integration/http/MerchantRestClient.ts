@@ -1,10 +1,10 @@
 import httpStatus from "http-status"
 
-import HttpClient from '../../infra/data/http/HttpClient';
+import HttpClient from "../../infra/data/http/HttpClient"
 
 import { isRequestFailed } from "./response/HttpRespose"
 
-import Merchant from '../../app/entities/Merchant';
+import Merchant from "../../app/entities/Merchant"
 
 export default class MerchantRestClient extends HttpClient {
     constructor({ baseUrl, timeout }) {
@@ -31,7 +31,7 @@ export default class MerchantRestClient extends HttpClient {
             }
 
             if(isRequestFailed(res.status)) {
-                const msg = `${this.getCallName(this.getMerchant)} - request failed with status ${res.status} and error `;
+                const msg = `${this.getCallName(this.getMerchant)} - request failed with status ${res.status} and error `
                 console.log(msg, res.error)
 
                 if(res.status === httpStatus.NOT_FOUND) return null

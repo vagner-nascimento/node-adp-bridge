@@ -1,10 +1,10 @@
 import httpStatus from "http-status"
 
-import HttpClient from '../../infra/data/http/HttpClient';
+import HttpClient from "../../infra/data/http/HttpClient"
 
 import { isRequestFailed } from "./response/HttpRespose"
 
-import MerchantAccount from '../../app/entities/MerchantAccount';
+import MerchantAccount from "../../app/entities/MerchantAccount"
 
 export default class MerchantsAccountsClient extends HttpClient {
     constructor({baseUrl, timeout }) {
@@ -30,7 +30,7 @@ export default class MerchantsAccountsClient extends HttpClient {
             }
 
             if(isRequestFailed(res.status)) {
-                const msg = `${this.getCallName(this.getByMerchant)} - request failed with status ${res.status} and error `;
+                const msg = `${this.getCallName(this.getByMerchant)} - request failed with status ${res.status} and error `
                 console.log(msg, res.error)
 
                 if(res.status === httpStatus.NOT_FOUND) return []
@@ -69,7 +69,7 @@ export default class MerchantsAccountsClient extends HttpClient {
             }
 
             if(isRequestFailed(res.status)) {
-                const msg = `${this.getCallName(this.getAccount)} - request failed with status ${res.status} and error `;
+                const msg = `${this.getCallName(this.getAccount)} - request failed with status ${res.status} and error `
                 console.log(msg, res.error)
 
                 if(res.status === httpStatus.NOT_FOUND) return null

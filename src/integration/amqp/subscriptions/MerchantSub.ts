@@ -1,6 +1,6 @@
-import addAccount from './AddAccount'
+import addAccount from "./AddAccount"
 
-import { Subscription } from '../../../infra/repositories/AmqpRepository';
+import { Subscription } from "../../../infra/repositories/AmqpRepository"
 
 // TODO put infos into app confs
 export class MerchantSub implements Subscription {

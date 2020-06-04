@@ -1,5 +1,5 @@
 import axios from "axios"
-import httpStatus from 'http-status';
+import httpStatus from "http-status"
 
 export default class HttpClient {
     constructor({ baseUrl, timeout = 10000 }) {

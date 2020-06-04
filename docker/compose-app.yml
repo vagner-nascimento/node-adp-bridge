@@ -9,7 +9,7 @@ services:
     depends_on:
       - js-rabbit-mq
     environment:
-      - NODE_ENV=DOCKER
+      - NODE_ENV=docker
     restart: on-failure
     ports:
       - 3000:3000

@@ -1,9 +1,9 @@
 import { isObject, isString } from "../../tools/Comparator"
 
-import Seller from '../entities/Seller';
-import Account from '../entities/Account'
-import Merchant from '../entities/Merchant';
-import { makeAccountFromMerchant, makeAccountFromSeller } from '../entities/Account';
+import Seller from "../entities/Seller"
+import Account from "../entities/Account"
+import Merchant from "../entities/Merchant"
+import { makeAccountFromMerchant, makeAccountFromSeller } from "../entities/Account"
 
 const isValidData = data => isObject(data) && hasRequiredId(data)
 

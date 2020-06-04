@@ -1,18 +1,20 @@
 import amqp from "amqplib"
 
-// 
+import { config } from "../../../config"
+
 class SingletRabbitConn {
     private constructor() {
+        this.connStr = config.data.amqp.connStr
     }
 
     private conn: any
+    private connStr: string
     private static instance: SingletRabbitConn
 
     private async connect(): Promise<void> {
         try {
             console.log("connecting on rabbitmq")
-            // TODO put conn str on env config
-            this.conn = await amqp.connect("amqp://guest:guest@js-rabbit-mq:5672")
+            this.conn = await amqp.connect(this.connStr)
 
             console.log("successfully connected on rabbitmq")
         } catch(err) {

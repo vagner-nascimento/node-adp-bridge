@@ -1,24 +1,30 @@
 import SingletRabbitConn from "../data/rabbitmq/SingletRabbitConn"
 
 //TODO realise how to import using relative path (src/.../.../Etc) with NODE_PATH=.
-import AccountDataHandler from '../../app/interfaces/AccountDataHandler';
+import AccountDataHandler from "../../app/interfaces/AccountDataHandler"
 
-import MerchantRestClient from '../../integration/http/MerchantRestClient';
+import MerchantRestClient from "../../integration/http/MerchantRestClient"
 
-import Account from '../../app/entities/Account';
-import Merchant from '../../app/entities/Merchant';
-import MerchantAccount from "../../app/entities/MerchantAccount";
-import MerchantsAccountsClient from '../../integration/http/MerchantsAccountsClient';
+import Account from "../../app/entities/Account"
+import Merchant from "../../app/entities/Merchant"
+import MerchantAccount from "../../app/entities/MerchantAccount"
+import MerchantsAccountsClient from "../../integration/http/MerchantsAccountsClient"
 
-// TODO put infos into app confs
+import { config } from "../../config"
+
 export class AccountRepository implements AccountDataHandler {
     constructor() {
-        this.merchantCli = new MerchantRestClient({ baseUrl: "http://rest-mock:4000/merchants", timeout: 10000 })
-        this.merchantAccsCli = new MerchantsAccountsClient({ baseUrl: "http://rest-mock:4000/merchant-accounts", timeout: 10000})
+        const {
+            merchants,
+            merchantsAccounts,
+        } = config.integration.rest
+
+        this.merchantCli = new MerchantRestClient(merchants)
+        this.merchantAccCli = new MerchantsAccountsClient(merchantsAccounts)
     }
 
     private merchantCli: MerchantRestClient
-    private merchantAccsCli: MerchantsAccountsClient
+    private merchantAccCli: MerchantsAccountsClient
 
     async Save(acc: Account): Promise<Account> {
         const conn = await SingletRabbitConn.getInstance()
@@ -34,10 +40,10 @@ export class AccountRepository implements AccountDataHandler {
     }
 
     async GetMerchantAccounts(merchantId: string): Promise<MerchantAccount[]> {
-        return await this.merchantAccsCli.getByMerchant(merchantId)
+        return await this.merchantAccCli.getByMerchant(merchantId)
     }
     
     async GetMerchantAccount(accId: string): Promise<MerchantAccount> {
-        return await this.merchantAccsCli.getAccount(accId)
+        return await this.merchantAccCli.getAccount(accId)
     }
 }
