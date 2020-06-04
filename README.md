@@ -8,7 +8,7 @@ This kind of adapter receives data from topics or queues (one or many), transfor
     - [x] publish on topics
     - [x] call http clients
     - [x] expose por 3000 to check health
-    - [ ] dockerize app
+    - [x] dockerize app
     - use in data models:
         - [ ] strings
         - [ ] arrays
