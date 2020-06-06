@@ -19,7 +19,7 @@ services:
     ports:
       - 4000:4000
     volumes:
-      - ./mock/rest:/data
+      - ./mocks/rest:/data
     restart: unless-stopped
     networks:
       - js-network

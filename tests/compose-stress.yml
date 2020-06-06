@@ -1,6 +1,24 @@
 version: '3.7'
 
 services:
+  js-stress-test:
+    container_name: js-stress-test
+    build:
+      context: .
+      dockerfile: StressTestDockerFile
+    depends_on:
+      - js-rabbit-mq
+    environment:
+      - NODE_ENV=docker
+      - NODE_PATH=.
+      - QTD_SELL=1500
+      - QTD_MERCH=1500
+      - MS_TIMEOUT=600000
+    networks:
+      - js-network
+    command: >
+      bash -c "/scripts/wait-for-it.sh -s -t 30 js-rabbit-mq:5672 -- node /app/stress.js"
+
   js-app:
     container_name: js-app
     build:

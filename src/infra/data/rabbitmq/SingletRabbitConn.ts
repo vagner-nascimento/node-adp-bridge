@@ -14,6 +14,7 @@ class SingletRabbitConn {
     private async connect(): Promise<void> {
         try {
             console.log("connecting on rabbitmq")
+
             this.conn = await amqp.connect(this.connStr)
 
             console.log("successfully connected on rabbitmq")
@@ -26,7 +27,7 @@ class SingletRabbitConn {
     
     public static async getInstance(): Promise<SingletRabbitConn> {
         if(!SingletRabbitConn.instance) {
-            SingletRabbitConn.instance = new SingletRabbitConn()            
+            SingletRabbitConn.instance = new SingletRabbitConn()
             await SingletRabbitConn.instance.connect()
         }
 
@@ -44,6 +45,7 @@ class SingletRabbitConn {
     }
 
     public async publish(queue: string, data: any): Promise<void> {
+        // TODO fix same error of stress tests
         const ch = await this.newChannel()
 
         ch.assertQueue(queue, { durable: false })
