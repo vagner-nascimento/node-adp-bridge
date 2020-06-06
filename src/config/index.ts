@@ -1,10 +1,13 @@
 import SingletonConfig from "./SingletonConfig"
 
+let config: any
+
 const  loadConfig = (): any => {
-    return SingletonConfig.getInstance().getConfig()
+    config = SingletonConfig.getInstance().getConfig()
+    
+    return config
 }
 
-const config = loadConfig()
 
 export {
     loadConfig,

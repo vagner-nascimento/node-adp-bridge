@@ -3,10 +3,12 @@ import Account from "../entities/Account"
 import AccountType from "../entities/AccountType"
 import MerchantAccount from "../entities/MerchantAccount"
 
+import { safeExec } from "../../tools/Async"
+
 import AccountDataHandler from "../interfaces/AccountDataHandler"
 
-const enrichSellerAccount = (acc: Account, merchant: Merchant, mAcc: MerchantAccount): Account => {
-    const lAcc = Object.assign({}, acc)    
+const getSellerEnrichAccount = (acc: Account, merchant: Merchant, mAcc: MerchantAccount): Account => {
+    const lAcc = Object.assign({}, acc)
     if(merchant)
         lAcc.country = merchant.country
 
@@ -16,9 +18,9 @@ const enrichSellerAccount = (acc: Account, merchant: Merchant, mAcc: MerchantAcc
     return lAcc
 }
 
-const enrichMerchantAccount = (acc: Account, mAccs: MerchantAccount[]): Account => {
+const getMerchantEnrichAccount = (acc: Account, mAcc: MerchantAccount[]): Account => {
     const lAcc = Object.assign({}, acc)
-    if(Array.isArray(mAccs)) lAcc.financial_accounts = mAccs
+    if(Array.isArray(mAcc)) lAcc.financial_accounts = mAcc
 
     return lAcc
 }
@@ -27,22 +29,27 @@ export function getEnrichmentStrategy(accTyp: string, repo: AccountDataHandler, 
     switch(accTyp) {
         case AccountType.SELLER:
             return async (acc: Account) => {
-                try {
-                    // TODO make these calls async
-                    const merchant = await repo.GetMerchant(acc.merchant_id)
-                    const mAcc = await repo.GetMerchantAccount(originEntity.merchant_account_id)
+                const mPromise = safeExec(repo.GetMerchant(originEntity.merchant_id))
+                const mAccPromise = safeExec(repo.GetMerchantAccount(originEntity.merchant_account_id))
 
-                    return enrichSellerAccount(acc, merchant, mAcc)
-                } catch {
-                    return acc
-                }
+                return Promise.all([mPromise, mAccPromise])
+                    .then(res => {
+                        let merchant = res[0]
+                        if(merchant instanceof Error) merchant = null
+
+                        let mAcc = res[1]
+                        if(mAcc instanceof Error) mAcc = null
+
+                        return getSellerEnrichAccount(acc, merchant, mAcc)
+                    })
             }
         case AccountType.MERCHANT:
             return async (acc: Account) => {
                 try {
-                    const mAccs = await repo.GetMerchantAccounts(acc.id)
+                    // TODO: make another merchant enrich call
+                    const mAcc = await repo.GetMerchantAccounts(acc.id)
 
-                    return enrichMerchantAccount(acc, mAccs)
+                    return getMerchantEnrichAccount(acc, mAcc)
                 } catch {
                     return acc
                 }

@@ -21,22 +21,24 @@ export class AccountRepository implements AccountDataHandler {
 
         this.merchantCli = new MerchantRestClient(merchants)
         this.merchantAccCli = new MerchantsAccountsClient(merchantsAccounts)
+        this.accountTopic = config.integration.amqp.pub.account.topic
     }
 
     private merchantCli: MerchantRestClient
     private merchantAccCli: MerchantsAccountsClient
+    private accountTopic: string
 
     async Save(acc: Account): Promise<Account> {
-        const conn = await SingletRabbitConn.getInstance()
-        await conn.publish("q-accounts", JSON.stringify(acc))
+        const conn = await SingletRabbitConn.getInstance()        
+        await conn.publish(this.accountTopic, JSON.stringify(acc))
         
         console.log("account saved ", acc)
 
         return acc
     }
 
-    async GetMerchant(merchanId: string): Promise<Merchant> {
-        return await this.merchantCli.getMerchant(merchanId)
+    async GetMerchant(merchantId: string): Promise<Merchant> {
+        return await this.merchantCli.getMerchant(merchantId)
     }
 
     async GetMerchantAccounts(merchantId: string): Promise<MerchantAccount[]> {

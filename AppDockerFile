@@ -2,10 +2,10 @@ FROM node:10.16-alpine
 
 WORKDIR /app
 
-# Install bash to wait-for-it script
+# Install bash to execute wait-for-it script
 RUN apk update && apk add bash
 
-# Move app startup script to its properly folder
+# Move wait-for-it script to its properly folder
 RUN mkdir /scripts
 COPY ["./docker/wait-for-it.sh", "/scripts"]
 

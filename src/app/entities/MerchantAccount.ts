@@ -1,13 +1,13 @@
 export default class MerchantAccount {
-    constructor({ merchant_id, name, number, id }){
-        this.merchant_id = merchant_id
+    constructor({ id, name, number, merchant_id }){
+        this.id = id
         this.name = name
         this.number = number
-        this.id = id
+        this.merchant_id = merchant_id
     }
 
-    public merchant_id: string
+    public id: string
     public name: string
     public number: string
-    public id: string
+    public merchant_id: string
 }

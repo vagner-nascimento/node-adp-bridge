@@ -7,11 +7,11 @@ import { makeAccountFromMerchant, makeAccountFromSeller } from "../entities/Acco
 
 const isValidData = data => isObject(data) && hasRequiredId(data)
 
-const hasRequiredId = data => isValidId(data.merchant_id) || isValidId(data.seller_id)
+const hasRequiredId = data => isValidId(data.id)
 
 const isValidId = id => isString(id) && id.length > 0
 
-const isMerchant = data => !("seller_id" in data)
+const isMerchant = data => !("merchant_id" in data)
 
 export default function (data: any): Account {
     if(isValidData(data)) {

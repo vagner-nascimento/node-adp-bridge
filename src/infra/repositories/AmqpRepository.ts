@@ -2,7 +2,7 @@ import SingletRabbitConn from "../data/rabbitmq/SingletRabbitConn"
 
 export interface Subscription {
     getTopic(): string
-    getHandler(): any // TODO realise how to specify func type
+    getHandler(): Function
 }
 
 export async function subscribeAll(subs: Subscription[]): Promise<void> {

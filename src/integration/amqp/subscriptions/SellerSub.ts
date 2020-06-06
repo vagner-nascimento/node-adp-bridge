@@ -1,16 +1,23 @@
+import { config } from "../../../config"
+
 import addAccount from "./AddAccount"
 
 import { Subscription } from "../../../infra/repositories/AmqpRepository"
 
-// TODO put infos into app confs
 export class SellerSub implements Subscription {
-    getTopic(): string {
-        return "q-sellers"
+    constructor() {
+        this.topic = config.integration.amqp.sub.seller.topic
     }
 
-    getHandler(): any {
+    private topic: string
+
+    getTopic(): string {
+        return this.topic
+    }
+
+    getHandler(): Function {
         return async (msg) => {
-            console.log(`${this.constructor.name} - message received on topic ${this.getTopic()}: `, msg.content.toString())
+            console.log(`${this.constructor.name} - message received on topic ${this.topic}: `, msg.content.toString())
 
             try{
                 await addAccount(msg.content)

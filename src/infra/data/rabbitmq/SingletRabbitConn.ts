@@ -33,6 +33,7 @@ class SingletRabbitConn {
         return SingletRabbitConn.instance
     }
 
+    // TODO: realise how to inform consumer to subscribe
     public async subscribe(queue: string, msgHandler: any): Promise<void> {
         const ch = await this.newChannel()
         

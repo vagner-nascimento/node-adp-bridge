@@ -1,8 +1,10 @@
+import { config } from "../../config"
+
 import newExpress from "express"
 import healthRoutes from "./HealthRoutes"
 
 export default (): Promise<any> => {
-    const port = 3000 // TODO put infos into app confs
+    const port = config.presentation.rest.port
     const express = newExpress()
     
     return new Promise((resolve, reject) => {

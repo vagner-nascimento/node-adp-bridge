@@ -1,6 +1,24 @@
 {
-	"seller_id": "s_1",
+    "id": "s_1",
+    "name": "Carmen Flower Seller",
+    "legal_document": "legal_doc_num",
+    "last_payment_date": "2019-12-15",
+    "updated_date": "2020-02-06T19:05:48",
+    "is_active": true,
     "merchant_id": "m_1",
-    "name": "MC Donnalds",
-    "merchant_account_id": "acc2_m_1"
+    "merchant_account_id": "acc2_m_1",
+    "contacts": [
+        {
+            "id": "s_1_c_1",
+            "name": "Sell_cont1",
+            "phone": "5551888999777",
+            "email": "cont1@gmail.com"
+        },
+        {
+            "id": "s_1_c_2",
+            "name": "Sell_cont2",
+            "phone": "5551444555888",
+            "email": "cont2@gmail.com"
+        }
+    ]
 }

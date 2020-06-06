@@ -4,6 +4,11 @@
             "connStr": "amqp://guest:guest@localhost:5672"
         }
     },
+    "presentation": {
+        "rest": {
+            "port": 3002
+        }
+    },
     "integration": {
         "rest": {
             "merchants": {
@@ -13,6 +18,23 @@
             "merchantsAccounts": {
                 "baseUrl": "http://localhost:4000/merchant-accounts",
                 "timeout": 10000
+            }
+        },
+        "amqp": {
+            "sub": {
+                "merchant": {
+                    "topic": "q-merchants",
+                    "consumer": "c-merchant"
+                },
+                "seller": {
+                    "topic": "q-sellers",
+                    "consumer": "c-seller"
+                }
+            },
+            "pub": {
+                "account": {
+                    "topic": "q-accounts"
+                }
             }
         }
     }

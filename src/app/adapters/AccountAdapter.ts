@@ -1,6 +1,6 @@
 import AccountDataHandler from "../interfaces/AccountDataHandler"
 
-import CreateAccount from "../usecases/CreateAccount"
+import createAccount from "../usecases/CreateAccount"
 
 import Account from "../entities/Account"
 import { getEnrichmentStrategy } from "../usecases/EnrichAccountData"
@@ -13,7 +13,7 @@ export class AccountAdapter {
     private repo: AccountDataHandler
     
     public async addAccount(data: any): Promise<Account> {
-        const acc = CreateAccount(data)
+        const acc = createAccount(data)
         const doEnrichment = getEnrichmentStrategy(acc.type, this.repo, data)
         const enrichedAccount = await doEnrichment(acc)
                 

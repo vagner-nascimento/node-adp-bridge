@@ -10,10 +10,9 @@ This kind of adapter receives data from topics or queues (one or many), transfor
     - [x] expose por 3000 to check health
     - [x] dockerize app
     - use in data models:
-        - [ ] strings
-        - [ ] arrays
-        - [ ] dates (date time and only date)
-        - [ ] int
-        - [ ] bool
-        - [ ] float
+        - [x] strings
+        - [x] arrays
+        - [x] dates (date time and only date)
+        - [x] bool
+        - [x] number
     - [ ] tests with coverage
