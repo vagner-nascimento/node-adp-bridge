@@ -2,11 +2,11 @@ import httpStatus from "http-status"
 
 import HttpClient from "../../infra/data/http/HttpClient"
 
-import { isRequestFailed } from "./response/HttpRespose"
+import { isRequestFailed } from "./response/HttpResponse"
 
 import Merchant from "../../app/entities/Merchant"
 
-export default class MerchantRestClient extends HttpClient {
+export default class MerchantsClient extends HttpClient {
     constructor({ baseUrl, timeout }) {
         super({ baseUrl, timeout })
     }
@@ -49,7 +49,7 @@ export default class MerchantRestClient extends HttpClient {
         }
     }
 
-    private getCallName(method: any): string {
-        return `${this.constructor.name}.${method.name}`
+    private getCallName(fn: any): string {
+        return `${this.constructor.name}.${fn.name}`
     }
 }

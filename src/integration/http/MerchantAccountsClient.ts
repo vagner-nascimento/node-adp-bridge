@@ -2,12 +2,12 @@ import httpStatus from "http-status"
 
 import HttpClient from "../../infra/data/http/HttpClient"
 
-import { isRequestFailed } from "./response/HttpRespose"
+import { isRequestFailed } from "./response/HttpResponse"
 
 import MerchantAccount from "../../app/entities/MerchantAccount"
 
-export default class MerchantsAccountsClient extends HttpClient {
-    constructor({baseUrl, timeout }) {
+export default class MerchantAccountsClient extends HttpClient {
+    constructor({ baseUrl, timeout }) {
         super({ baseUrl, timeout })
     }
 
@@ -58,7 +58,7 @@ export default class MerchantsAccountsClient extends HttpClient {
             }
         }
 
-        const defaultError =  new Error(`${this.getCallName(this.getAccount)} - an erro occured on try to get the merchant accounts`)
+        const defaultError =  new Error(`${this.getCallName(this.getAccount)} - an error occurred on try to get the merchant accounts`)
 
         try {
             const res = await super.get(req)
@@ -87,7 +87,7 @@ export default class MerchantsAccountsClient extends HttpClient {
         }
     }
 
-    private getCallName(method: any): string {
-        return `${this.constructor.name}.${method.name}`
+    private getCallName(fn: any): string {
+        return `${this.constructor.name}.${fn.name}`
     }
 }

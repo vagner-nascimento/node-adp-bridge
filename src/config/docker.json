@@ -18,6 +18,10 @@
             "merchantsAccounts": {
                 "baseUrl": "http://js-rest-mock:4000/merchant-accounts",
                 "timeout": 10000
+            },
+            "affiliations": {
+                "baseUrl": "http://js-rest-mock:4000/affiliations",
+                "timeout": 10000
             }
         },
         "amqp": {

@@ -3,12 +3,14 @@ import SingletRabbitConn from "../data/rabbitmq/SingletRabbitConn"
 //TODO realise how to import using relative path (src/.../.../Etc) with NODE_PATH=.
 import AccountDataHandler from "../../app/interfaces/AccountDataHandler"
 
-import MerchantRestClient from "../../integration/http/MerchantRestClient"
+import MerchantsClient from "../../integration/http/MerchantsClient"
+import MerchantAccountsClient from "../../integration/http/MerchantAccountsClient"
+import AffiliationsClient from "../../integration/http/AffiliationsClient"
 
 import Account from "../../app/entities/Account"
 import Merchant from "../../app/entities/Merchant"
 import MerchantAccount from "../../app/entities/MerchantAccount"
-import MerchantsAccountsClient from "../../integration/http/MerchantsAccountsClient"
+import Affiliation from "../../app/entities/Affiliation"
 
 import { config } from "../../config"
 
@@ -16,16 +18,19 @@ export class AccountRepository implements AccountDataHandler {
     constructor() {
         const {
             merchants,
-            merchantsAccounts,
+            affiliations,
+            merchantsAccounts
         } = config.integration.rest
 
-        this.merchantCli = new MerchantRestClient(merchants)
-        this.merchantAccCli = new MerchantsAccountsClient(merchantsAccounts)
+        this.merchantsCli = new MerchantsClient(merchants)
+        this.merchantAccCli = new MerchantAccountsClient(merchantsAccounts)
+        this.affiliationsCli = new AffiliationsClient(affiliations)
         this.accountTopic = config.integration.amqp.pub.account.topic
     }
 
-    private merchantCli: MerchantRestClient
-    private merchantAccCli: MerchantsAccountsClient
+    private merchantsCli: MerchantsClient
+    private merchantAccCli: MerchantAccountsClient
+    private affiliationsCli: AffiliationsClient
     private accountTopic: string
 
     async Save(acc: Account): Promise<Account> {
@@ -38,7 +43,7 @@ export class AccountRepository implements AccountDataHandler {
     }
 
     async GetMerchant(merchantId: string): Promise<Merchant> {
-        return await this.merchantCli.getMerchant(merchantId)
+        return await this.merchantsCli.getMerchant(merchantId)
     }
 
     async GetMerchantAccounts(merchantId: string): Promise<MerchantAccount[]> {
@@ -47,5 +52,9 @@ export class AccountRepository implements AccountDataHandler {
     
     async GetMerchantAccount(accId: string): Promise<MerchantAccount> {
         return await this.merchantAccCli.getAccount(accId)
+    }
+
+    async GetMerchantAffiliation(merchantId: string): Promise<Affiliation> {
+        return await this.affiliationsCli.getByMerchant(merchantId)
     }
 }

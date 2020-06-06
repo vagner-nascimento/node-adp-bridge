@@ -6,21 +6,22 @@ import MerchantAccount from "../entities/MerchantAccount"
 import { safeExec } from "../../tools/Async"
 
 import AccountDataHandler from "../interfaces/AccountDataHandler"
+import Affiliation from "../entities/Affiliation"
 
 const getSellerEnrichAccount = (acc: Account, merchant: Merchant, mAcc: MerchantAccount): Account => {
     const lAcc = Object.assign({}, acc)
-    if(merchant)
-        lAcc.country = merchant.country
 
-    if(mAcc)
-        lAcc.financial_accounts = [mAcc]
+    if(merchant) lAcc.country = merchant.country
+    if(mAcc) lAcc.financial_accounts = [mAcc]
 
     return lAcc
 }
 
-const getMerchantEnrichAccount = (acc: Account, mAcc: MerchantAccount[]): Account => {
+const getMerchantEnrichAccount = (acc: Account, mAcc: MerchantAccount[], aff: Affiliation): Account => {
     const lAcc = Object.assign({}, acc)
+
     if(Array.isArray(mAcc)) lAcc.financial_accounts = mAcc
+    if(aff) lAcc.legal_document = aff.legal_document
 
     return lAcc
 }
@@ -45,14 +46,19 @@ export function getEnrichmentStrategy(accTyp: string, repo: AccountDataHandler, 
             }
         case AccountType.MERCHANT:
             return async (acc: Account) => {
-                try {
-                    // TODO: make another merchant enrich call
-                    const mAcc = await repo.GetMerchantAccounts(acc.id)
+                const accPromise = safeExec(repo.GetMerchantAccounts(acc.id))
+                const affPromise = safeExec(repo.GetMerchantAffiliation(acc.id))
+                    
+                return Promise.all([accPromise, affPromise])
+                    .then(res => {
+                        let mAcc = res[0]
+                        if(mAcc instanceof Error) mAcc = []
 
-                    return getMerchantEnrichAccount(acc, mAcc)
-                } catch {
-                    return acc
-                }
+                        let aff = res[1]
+                        if(aff instanceof Error) aff = null
+
+                        return getMerchantEnrichAccount(acc, mAcc, aff)
+                    })
             }
         default:
             return async (acc: Account) => (acc)
