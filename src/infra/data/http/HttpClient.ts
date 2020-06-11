@@ -25,7 +25,6 @@ export default class HttpClient {
         try {
             return await this.instance({ method, headers, url, params, data })
         } catch(error) {
-            // TODO properly handle axios errors
             if(error.isAxiosError) {
                 if(error.response)
                     return { error, status: error.response.status, data: null }

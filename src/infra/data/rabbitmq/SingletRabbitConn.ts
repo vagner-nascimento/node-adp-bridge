@@ -34,22 +34,27 @@ class SingletRabbitConn {
         return SingletRabbitConn.instance
     }
 
-    // TODO: realise how to inform consumer to subscribe
     public async subscribe(queue: string, msgHandler: any): Promise<void> {
         const ch = await this.newChannel()
         
-        ch.assertQueue(queue, { durable: false })
-        ch.consume(queue, msgHandler, { noAck: true })
+        await ch.assertQueue(queue, { durable: false })
+        await ch.consume(queue, msgHandler, { noAck: true })
 
         console.log(`subscribed on queue ${queue}`)
     }
 
     public async publish(queue: string, data: any): Promise<void> {
-        // TODO fix same error of stress tests
         const ch = await this.newChannel()
 
-        ch.assertQueue(queue, { durable: false })
-        ch.sendToQueue(queue, Buffer.from(data))
+        try {
+            await ch.assertQueue(queue, { durable: false })
+            await ch.sendToQueue(queue, Buffer.from(data))            
+            await ch.close()
+        } catch(err) {
+            console.log(`error on to publish data into ${queue} `, err)
+
+            throw err
+        }
     }
 
     private async newChannel(): Promise<any> {

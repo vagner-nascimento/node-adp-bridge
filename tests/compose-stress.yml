@@ -11,9 +11,9 @@ services:
     environment:
       - NODE_ENV=docker
       - NODE_PATH=.
-      - QTD_SELL=1500
-      - QTD_MERCH=1500
-      - MS_TIMEOUT=600000
+      - QTD_SELL=200
+      - QTD_MERCH=200
+      - MS_TIMEOUT=20000
     networks:
       - js-network
     command: >
@@ -35,7 +35,7 @@ services:
     networks:
       - js-network
     command: >
-      bash -c "/scripts/wait-for-it.sh -s -t 10 js-rabbit-mq:5672 -- node /app/dist/main.js"
+      bash -c "/scripts/wait-for-it.sh -s -t 30 js-rabbit-mq:5672 -- node /app/dist/main.js"
 
   js-rabbit-mq:
     container_name: js-rabbit-mq
