@@ -4,8 +4,8 @@ const merchantData = require("./support/mocks/merchant")
 const sellerData = require("./support/mocks/seller")
 
 const env = process.env.NODE_ENV ? process.env.NODE_ENV.toLocaleLowerCase() : "local"
-const qtdSell = process.env.QTD_SELL ? Number(process.env.QTD_SELL) : 50
-const qtdMer = process.env.QTD_MERCH ? Number(process.env.QTD_MERCH) : 50
+const qtdSell = process.env.QTD_SELL ? Number(process.env.QTD_SELL) : 100
+const qtdMer = process.env.QTD_MERCH ? Number(process.env.QTD_MERCH) : 100
 const timeOutMs = process.env.MS_TIMEOUT ? Number(process.env.MS_TIMEOUT) : 8000
 /*
     2 minutes: 120000
@@ -70,7 +70,7 @@ const consumeAccounts = async conn => {
     
     const qAcc = 'q-accounts'
     const msgHandler = async () => {
-        msgProcessed++ // TODO all messages are processed but it don't count last messages
+        msgProcessed++
         console.log(`event on - processed ${msgProcessed} messages`)
     }
 
@@ -87,14 +87,14 @@ const getTimeInMinutes = millis => {
     return minutes + ":" + (seconds < 10 ? '0' : '') + seconds
 }
 
-const start = async () => {
+const runWithConsume = async () => {
     const conn = await connect()
     console.log('successfully connected on amqp server')
     
-    // await consumeAccounts(conn)
+    await consumeAccounts(conn)
 
-    // const startTime = new Date().getTime()
-    // const timeout = new Date(startTime + timeOutMs)
+    const startTime = new Date().getTime()
+    const timeout = new Date(startTime + timeOutMs)
 
     const selPromise = pubSellers(conn)
     const merPromise = pubMerchants(conn)
@@ -104,22 +104,40 @@ const start = async () => {
             console.log(`all ${qtdMer + qtdSell} messages were published`)
         })
 
-    // const totalSent = qtdSell + qtdMer
-    // let success = false
+    // TODO count doesn't work, realise how to consume and count to automatize this test
+    const totalSent = qtdSell + qtdMer
+    let success = false
 
-    // while(new Date() <= timeout) {
-    //     if(msgProcessed == totalSent) {
-    //         success = true
-    //         break
-    //     }
-    // }
+    while(new Date() <= timeout) {
+        if(msgProcessed == totalSent) {
+            success = true
+            break
+        }
+    }
 
-    // if(success) {
-    //     const duration = getTimeInMinutes(new Date().getTime() - startTime)
-    //     console.log(`SUCCESS: STRESS TESTS COMPLETED IN ${duration}`)
-    // } else {
-    //     console.log(`TEST FAILED, PROCESSED ${msgProcessed} OF ${totalSent} MESSAGES`)
-    // }
+    if(success) {
+        const duration = getTimeInMinutes(new Date().getTime() - startTime)
+        console.log(`SUCCESS: STRESS TESTS COMPLETED IN ${duration}`)
+    } else {
+        console.log(`TEST FAILED, PROCESSED ${msgProcessed} OF ${totalSent} MESSAGES`)
+    }
+}
+
+const runWithoutConsume = async () => {
+    const conn = await connect()
+    console.log('successfully connected on amqp server')
+
+    const selPromise = pubSellers(conn)
+    const merPromise = pubMerchants(conn)
+
+    await Promise.all([merPromise, selPromise])
+        .then(() => {
+            console.log(`all ${qtdMer + qtdSell} messages were published`)
+        })
+}
+
+const start = async () => {
+    await runWithoutConsume()
 }
 
 start()
