@@ -11,9 +11,10 @@ services:
     environment:
       - NODE_ENV=docker
       - NODE_PATH=.
-      - QTD_SELL=200
-      - QTD_MERCH=200
+      - QTD_SELL=10
+      - QTD_MERCH=10
       - MS_TIMEOUT=20000
+    restart: on-failure
     networks:
       - js-network
     command: >
@@ -55,7 +56,7 @@ services:
     ports:
       - 4000:4000
     volumes:
-      - ./mocks/rest:/data
+      - ../docker/mocks/rest:/data
     restart: unless-stopped
     networks:
       - js-network

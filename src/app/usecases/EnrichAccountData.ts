@@ -26,7 +26,7 @@ const getMerchantEnrichAccount = (acc: Account, mAcc: MerchantAccount[], aff: Af
     return lAcc
 }
 
-export function getEnrichmentStrategy(accTyp: string, repo: AccountDataHandler, originEntity: any): any {
+export function getEnrichmentStrategy(accTyp: string, repo: AccountDataHandler, originEntity: any): Function {
     switch(accTyp) {
         case AccountType.SELLER:
             return async (acc: Account) => {

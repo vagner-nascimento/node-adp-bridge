@@ -8,9 +8,9 @@ const qtdSell = process.env.QTD_SELL ? Number(process.env.QTD_SELL) : 50
 const qtdMer = process.env.QTD_MERCH ? Number(process.env.QTD_MERCH) : 50
 const timeOutMs = process.env.MS_TIMEOUT ? Number(process.env.MS_TIMEOUT) : 8000
 /*
- 2 minutes: 120000
- 30 seconds: 30000
- 15 seconds: 15000
+    2 minutes: 120000
+    30 seconds: 30000
+    15 seconds: 15000
 */
 
 let msgProcessed = 0
@@ -91,35 +91,35 @@ const start = async () => {
     const conn = await connect()
     console.log('successfully connected on amqp server')
     
-    await consumeAccounts(conn)
+    // await consumeAccounts(conn)
 
-    const startTime = new Date().getTime()
-    const timeout = new Date(startTime + timeOutMs)
+    // const startTime = new Date().getTime()
+    // const timeout = new Date(startTime + timeOutMs)
 
     const selPromise = pubSellers(conn)
     const merPromise = pubMerchants(conn)
 
     await Promise.all([merPromise, selPromise])
         .then(() => {
-            console.log("messages published")            
+            console.log(`all ${qtdMer + qtdSell} messages were published`)
         })
 
-    const totalSent = qtdSell + qtdMer
-    let success = false
+    // const totalSent = qtdSell + qtdMer
+    // let success = false
 
-    while(new Date() <= timeout) {
-        if(msgProcessed == totalSent) {
-            success = true
-            break
-        }
-    }
+    // while(new Date() <= timeout) {
+    //     if(msgProcessed == totalSent) {
+    //         success = true
+    //         break
+    //     }
+    // }
 
-    if(success) {
-        const duration = getTimeInMinutes(new Date().getTime() - startTime)
-        console.log(`SUCCESS: STRESS TESTS COMPLETED IN ${duration}`)
-    } else {
-        console.log(`TEST FAILED, PROCESSED ${msgProcessed} OF ${totalSent} MESSAGES`)
-    }
+    // if(success) {
+    //     const duration = getTimeInMinutes(new Date().getTime() - startTime)
+    //     console.log(`SUCCESS: STRESS TESTS COMPLETED IN ${duration}`)
+    // } else {
+    //     console.log(`TEST FAILED, PROCESSED ${msgProcessed} OF ${totalSent} MESSAGES`)
+    // }
 }
 
 start()
