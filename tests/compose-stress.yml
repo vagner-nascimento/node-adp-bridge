@@ -11,8 +11,8 @@ services:
     environment:
       - NODE_ENV=docker
       - NODE_PATH=.
-      - QTD_SELL=10
-      - QTD_MERCH=10
+      - QTD_SELL=50000
+      - QTD_MERCH=50000
       - MS_TIMEOUT=20000
     restart: on-failure
     networks:

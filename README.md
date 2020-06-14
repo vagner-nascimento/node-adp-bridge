@@ -3,6 +3,9 @@ A Node JS enriching adapter.
 
 This kind of adapter receives data from topics or queues (one or many), transform the data and publishing it into another topics or queues (one or many). Usually it call other sources of data (like other http clients) to enrich the original data.
 
+# stress test result running on docker
+    - 100.000 messages in 8:21 minutes (pc configs: intel i7 9th gen and 8GB ram memory)
+
 # requirements
     - [x] consume topics
     - [x] publish on topics
