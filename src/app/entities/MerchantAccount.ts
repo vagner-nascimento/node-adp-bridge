@@ -6,8 +6,8 @@ export default class MerchantAccount {
         this.merchant_id = merchant_id
     }
 
-    public id: string
-    public name: string
-    public number: string
-    public merchant_id: string
+    id: string
+    name: string
+    number: string
+    merchant_id: string
 }

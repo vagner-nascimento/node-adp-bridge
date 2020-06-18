@@ -5,7 +5,7 @@ export default class Affiliation {
         this.legal_document = legal_document
     }
 
-    public id: string
-    public merchant_id: string
-    public legal_document: string
+    id: string
+    merchant_id: string
+    legal_document: string
 }

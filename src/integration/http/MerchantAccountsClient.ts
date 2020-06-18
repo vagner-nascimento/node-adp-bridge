@@ -1,5 +1,7 @@
 import httpStatus from "http-status"
 
+import logger from "../../infra/logger"
+
 import HttpClient from "../../infra/data/http/HttpClient"
 
 import { isRequestFailed } from "./response/HttpResponse"
@@ -24,27 +26,27 @@ export default class MerchantAccountsClient extends HttpClient {
         try {
             const res = await super.get(req)
             if(res.status === httpStatus.NO_CONTENT) {
-                console.log(`${this.getCallName(this.getByMerchant)} - returned ${res.status} without data`)
+                logger.info(`${this.getCallName(this.getByMerchant)} - returned ${res.status} without data`)
 
                 return []
             }
 
             if(isRequestFailed(res.status)) {
                 const msg = `${this.getCallName(this.getByMerchant)} - request failed with status ${res.status} and error `
-                console.log(msg, res.error)
+                logger.info(msg, res.error)
 
                 if(res.status === httpStatus.NOT_FOUND) return []
 
                 throw defaultError
             }
 
-            console.log(`${this.getCallName(this.getByMerchant)} - response data `, res.data)
+            logger.info(`${this.getCallName(this.getByMerchant)} - response data `, res.data)
 
             if(!Array.isArray(res.data)) throw new Error(`${this.getCallName(this.getByMerchant)} - unexpedted non array response`)
 
             return res.data.map(d => new MerchantAccount(d))
         } catch(err) {
-            console.log(`${this.getCallName(this.getByMerchant)} - error `, err)
+            logger.info(`${this.getCallName(this.getByMerchant)} - error `, err)
 
             throw defaultError
         }
@@ -63,25 +65,25 @@ export default class MerchantAccountsClient extends HttpClient {
         try {
             const res = await super.get(req)
             if(res.status === httpStatus.NO_CONTENT) {
-                console.log(`${this.getCallName(this.getAccount)} - returned ${res.status} without data`)
+                logger.info(`${this.getCallName(this.getAccount)} - returned ${res.status} without data`)
 
                 return null
             }
 
             if(isRequestFailed(res.status)) {
                 const msg = `${this.getCallName(this.getAccount)} - request failed with status ${res.status} and error `
-                console.log(msg, res.error)
+                logger.info(msg, res.error)
 
                 if(res.status === httpStatus.NOT_FOUND) return null
 
                 throw defaultError
             }
 
-            console.log(`${this.getCallName(this.getAccount)} - response data `, res.data)
+            logger.info(`${this.getCallName(this.getAccount)} - response data `, res.data)
 
             return new MerchantAccount(res.data)
         } catch(err) {
-            console.log(`${this.getCallName(this.getAccount)} - error `, err)
+            logger.info(`${this.getCallName(this.getAccount)} - error `, err)
 
             throw defaultError
         }

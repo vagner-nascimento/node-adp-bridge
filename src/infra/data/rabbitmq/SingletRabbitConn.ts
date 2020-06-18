@@ -1,25 +1,27 @@
 import amqp from "amqplib"
 
+import logger from "../../logger"
+
 import { config } from "../../../config"
 
 class SingletRabbitConn {
     private constructor() {
         this.connStr = config.data.amqp.connStr
     }
-
+    
     private conn: any
     private connStr: string
     private static instance: SingletRabbitConn
 
     private async connect(): Promise<void> {
         try {
-            console.log("connecting on rabbitmq")
+            logger.info("connecting on rabbitmq")
 
             this.conn = await amqp.connect(this.connStr)
 
-            console.log("successfully connected on rabbitmq")
+            logger.info("successfully connected on rabbitmq")
         } catch(err) {
-            console.log("error on try to connection on rabbitmq ", err)
+            logger.info("error on try to connection on rabbitmq ", err)
 
             throw err
         }
@@ -40,7 +42,7 @@ class SingletRabbitConn {
         await ch.assertQueue(queue, { durable: false })
         await ch.consume(queue, msgHandler, { noAck: true })
 
-        console.log(`subscribed on queue ${queue}`)
+        logger.info(`subscribed on queue ${queue}`)
     }
 
     public async publish(queue: string, data: any): Promise<void> {
@@ -51,7 +53,7 @@ class SingletRabbitConn {
             await ch.sendToQueue(queue, Buffer.from(data))            
             await ch.close()
         } catch(err) {
-            console.log(`error on to publish data into ${queue} `, err)
+            logger.info(`error on to publish data into ${queue} `, err)
 
             throw err
         }
@@ -61,7 +63,7 @@ class SingletRabbitConn {
         try {
             return await this.conn.createChannel()
         } catch(err) {
-            console.log("error on try to get a new channel ", err)
+            logger.info("error on try to get a new channel ", err)
 
             throw err
         }

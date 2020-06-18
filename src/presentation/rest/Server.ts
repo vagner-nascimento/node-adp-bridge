@@ -1,6 +1,9 @@
 import { config } from "../../config"
 
+import logger from "../../infra/logger"
+
 import newExpress from "express"
+
 import healthRoutes from "./HealthRoutes"
 
 export default (): Promise<any> => {
@@ -12,11 +15,11 @@ export default (): Promise<any> => {
 
         express.listen(port, err => {
             if (err) {
-                console.log("error on srtart rest server ", err)
+                logger.info("error on srtart rest server ", err)
                 reject(err)
             }
     
-            console.log(`rest server is listening on port ${port}`)
+            logger.info(`rest server is listening on port ${port}`)
             resolve()
         })
     })

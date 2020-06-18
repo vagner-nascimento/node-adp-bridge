@@ -1,5 +1,7 @@
 import { config } from "../../../config"
 
+import logger from "../../../infra/logger"
+
 import addAccount from "./AddAccount"
 
 import { Subscription } from "../../../infra/repositories/AmqpRepository"
@@ -17,12 +19,12 @@ export class SellerSub implements Subscription {
 
     getHandler(): Function {
         return async (msg) => {
-            console.log(`${this.constructor.name} - message received on topic ${this.topic}: `, msg.content.toString())
+            logger.info(`${this.constructor.name} - message received on topic ${this.topic}`, msg.content.toString())
 
             try{
                 await addAccount(msg.content)
             } catch(err) {
-                console.log(`${this.constructor.name} - error on process message `, err)
+                logger.info(`${this.constructor.name} - error on process message`, err)
             }
         }
     }

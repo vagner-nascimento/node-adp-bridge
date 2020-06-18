@@ -12,6 +12,7 @@ import Merchant from "../../app/entities/Merchant"
 import MerchantAccount from "../../app/entities/MerchantAccount"
 import Affiliation from "../../app/entities/Affiliation"
 
+import logger from "../logger"
 import { config } from "../../config"
 
 export class AccountRepository implements AccountDataHandler {
@@ -37,7 +38,7 @@ export class AccountRepository implements AccountDataHandler {
         const conn = await SingletRabbitConn.getInstance()        
         await conn.publish(this.accountTopic, JSON.stringify(acc))
         
-        console.log("account saved ", acc)
+        logger.info("account saved ", acc)
 
         return acc
     }

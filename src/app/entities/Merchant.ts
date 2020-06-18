@@ -9,11 +9,11 @@ export default class Merchant {
         this.credit_limit = credit_limit
     }
     
-    public id: string
-    public name: string
-    public country: string
-    public updated_date: Date
-    public billing_day: number
-    public is_active: boolean
-    public credit_limit: number
+    id: string
+    name: string
+    country: string
+    updated_date: Date
+    billing_day: number
+    is_active: boolean
+    credit_limit: number
 }

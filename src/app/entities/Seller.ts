@@ -23,13 +23,13 @@ export default class Seller {
         this.contacts = contacts.map(c => new Contact(c))
     }
 
-    public id: string
-    public name: string
-    public legal_document: string
-    public last_payment_date: Date
-    public is_active: boolean
-    public merchant_id: string
-    public merchant_account_id: string
-    public updated_date: Date
-    public contacts: Contact[]
+    id: string
+    name: string
+    legal_document: string
+    last_payment_date: Date
+    is_active: boolean
+    merchant_id: string
+    merchant_account_id: string
+    updated_date: Date
+    contacts: Contact[]
 }
