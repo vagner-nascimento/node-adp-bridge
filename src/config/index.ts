@@ -8,8 +8,8 @@ const  loadConfig = (): any => {
     let env = process.env.NODE_ENV    
     if(env) env = env.toLowerCase()
     else {
-        env = "local"
-        console.log("NODE_ENV not informed, setted local")
+        env = "LOCAL"
+        console.log("NODE_ENV not informed, using LOCAL")
     }
 
     return Object.assign(config, { env }, require(`./${env}`))

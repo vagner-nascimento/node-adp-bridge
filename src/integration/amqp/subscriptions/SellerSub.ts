@@ -9,12 +9,18 @@ import { Subscription } from "../../../infra/repositories/AmqpRepository"
 export class SellerSub implements Subscription {
     constructor() {
         this.topic = config.integration.amqp.sub.seller.topic
-    }
+        this.consumer = config.integration.amqp.sub.seller.consumer
+    }    
 
     private topic: string
+    private consumer: string
 
     getTopic(): string {
         return this.topic
+    }
+
+    getConsumer(): string {
+        return this.consumer
     }
 
     getHandler(): Function {

@@ -16,7 +16,7 @@ const timeOutMs = process.env.MS_TIMEOUT ? Number(process.env.MS_TIMEOUT) : 8000
 let msgProcessed = 0
 
 const connect = async () => {
-    let connStr = env === "docker" ? "amqp://guest:guest@js-rabbit-mq:5672" : "amqp://guest:guest@localhost:5672"
+    let connStr = env === "docker" ? "amqp://guest:guest@rabbit-mq:5672" : "amqp://guest:guest@localhost:5672"
 
     return await amqp.connect(connStr)
 }

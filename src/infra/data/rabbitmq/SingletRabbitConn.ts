@@ -36,11 +36,11 @@ class SingletRabbitConn {
         return SingletRabbitConn.instance
     }
 
-    public async subscribe(queue: string, msgHandler: any): Promise<void> {
+    public async subscribe(queue: string, consumer: string, msgHandler: any): Promise<void> {
         const ch = await this.newChannel()
         
         await ch.assertQueue(queue, { durable: false })
-        await ch.consume(queue, msgHandler, { noAck: true })
+        await ch.consume(queue, msgHandler, { noAck: true, consumerTag: consumer })
 
         logger.info(`subscribed on queue ${queue}`)
     }

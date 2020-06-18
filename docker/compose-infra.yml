@@ -1,8 +1,8 @@
 version: '3.7'
 
 services:
-  js-rabbit-mq:
-    container_name: js-rabbit-mq
+  rabbit-mq:
+    container_name: rabbit-mq
     image: rabbitmq:3.6-management-alpine
     ports:
       - 5672:5672
@@ -10,10 +10,10 @@ services:
     volumes:
       - rabitmq:/etc/rabbitmq/
     networks:
-      - js-network
+      - app-network
 
-  js-rest-mock:
-    container_name: js-rest-mock
+  rest-mock:
+    container_name: rest-mock
     image: vimagick/json-server
     command: -H 0.0.0.0 -p 4000 -w db.json
     ports:
@@ -22,11 +22,11 @@ services:
       - ./mocks/rest:/data
     restart: unless-stopped
     networks:
-      - js-network
+      - app-network
 
 volumes:
   rabitmq:
 
 networks:
-  js-network:
+  app-network:
     driver: bridge
