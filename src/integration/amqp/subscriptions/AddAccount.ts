@@ -1,10 +1,17 @@
-import { getAccountAdapter as getAccountAdapter } from "../../../provider/Provider"
+import { getAccountAdapter } from "../../../provider/Provider"
 
 import Account from "../../../app/entities/Account"
+import logger from "../../../infra/logger"
+import ApplicationError from "../../../error/ApplicationError"
 
 export default async function(data: any): Promise<Account> {
-    const accAdp = getAccountAdapter()
-    const dataObj = JSON.parse(data)
-    
-    return await accAdp.addAccount(dataObj)
+    try{
+        const accAdp = getAccountAdapter()   
+        
+        return await accAdp.addAccount(JSON.parse(data))
+    } catch(err) {
+        logger.error("error on create a new account", err)
+        
+        throw new ApplicationError("error on create a new account", err)
+    }
 }

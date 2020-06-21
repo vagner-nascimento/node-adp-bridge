@@ -25,13 +25,7 @@ export class MerchantSub implements Subscription {
 
     getHandler(): Function {
         return async (msg) => {
-            logger.info(`${this.constructor.name} - message received on topic ${this.topic}: `, msg.content.toString())
-
-            try {
-                await addAccount(msg.content)
-            } catch(err) {
-                logger.error(`${this.constructor.name} - error on process message`, err)
-            }
+            await addAccount(msg.content)
         }
     }
 }
