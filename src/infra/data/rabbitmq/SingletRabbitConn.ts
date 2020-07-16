@@ -16,14 +16,32 @@ class SingletRabbitConn {
             console.log("connecting on rabbitmq")
 
             this.conn = await amqp.connect(this.connStr)
+            
+            this.setEvenHandlers()
 
             console.log("successfully connected on rabbitmq")
         } catch(err) {
+            //TODO: implements retry with sleep
             console.log("error on try to connection on rabbitmq ", err)
 
             throw err
         }
-    }   
+    }
+
+    private setEvenHandlers(){
+        //TODO: subscribe consumers again when reconnect
+        this.conn.connection.on('close', err => {
+            console.log('connection closed', err)
+
+            this.connect()
+        })
+        
+        this.conn.connection.on('error', err => {
+            console.log('connection error', err)
+
+            this.connect()
+        })
+    }
     
     public static async getInstance(): Promise<SingletRabbitConn> {
         if(!SingletRabbitConn.instance) {
