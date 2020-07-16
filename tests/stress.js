@@ -104,7 +104,7 @@ const runWithConsume = async () => {
             console.log(`all ${qtdMer + qtdSell} messages were published`)
         })
 
-    // TODO count doesn"t work, realise how to consume and count to automatize this test
+    // TODO count doesn't works, realise how to consume and count to automatize this test
     const totalSent = qtdSell + qtdMer
     let success = false
 

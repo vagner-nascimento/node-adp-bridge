@@ -35,8 +35,7 @@ export class AccountRepository implements AccountDataHandler {
     private accountTopic: string
 
     async Save(acc: Account): Promise<Account> {
-        const conn = await SingletRabbitConn.getInstance()        
-        await conn.publish(this.accountTopic, JSON.stringify(acc))
+        await SingletRabbitConn.publish(this.accountTopic, JSON.stringify(acc))
         
         logger.info("account saved ", acc)
 

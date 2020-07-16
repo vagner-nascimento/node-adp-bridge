@@ -3,6 +3,8 @@ import { SellerSub } from "./subscriptions/SellerSub"
 
 import { subscribeAll, Subscription } from "../../infra/repositories/AmqpRepository"
 
+import eventEmiter from "../../tools/EventEmiter"
+
 const getSubscriptions = (): Subscription[] => {
     return [
         new MerchantSub(),
@@ -11,5 +13,7 @@ const getSubscriptions = (): Subscription[] => {
 }
 
 export default async function(): Promise<void> {
-    await subscribeAll(getSubscriptions())
+    eventEmiter.on("AmqpConnected", async () => {
+        await subscribeAll(getSubscriptions())
+    })
 }

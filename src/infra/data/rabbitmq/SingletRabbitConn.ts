@@ -2,56 +2,67 @@ import amqp from "amqplib"
 
 import logger from "../../logger"
 
-import { config } from "../../../config"
+import eventEmiter from "../../../tools/EventEmiter"
+
+const { config } = require("../../../config") //import doesn't works here
 
 class SingletRabbitConn {
-    private constructor() {
-        this.connStr = config.data.amqp.connStr
+    public constructor() {
+        this.connStr = config.data.amqp.connStr        
+        this.conn = { isUp: false }
+
+        const {
+            sleep = 3000,
+            maxTries = 4
+        } = config.data.amqp.connRetry
+
+        this.retry = {
+            sleep,
+            maxTries
+        }
+
+        this.connect()
     }
     
     private conn: any
     private connStr: string
-    private static instance: SingletRabbitConn
+    private retry: any
 
     private async connect(): Promise<void> {
         try {
-            logger.info("connecting on rabbitmq")
+            logger.info("connecting into rabbitmq")
 
             this.conn = await amqp.connect(this.connStr)
-            
-            this.setEventsHandler()
+            this.conn.isUp = true
 
-            logger.info("successfully connected on rabbitmq")
+            this.setEventsHandler()
+            eventEmiter.emit("AmqpConnected")
+
+            logger.info("successfully connected into rabbitmq")
         } catch(err) {
             //TODO: implements retry with sleep
-            console.log("error on try to connection on rabbitmq ", err)
+            logger.error("error on try to connection into rabbitmq ", err)
 
             throw err
         }
     }
 
     private setEventsHandler(){
-        //TODO: subscribe consumers again when reconnect
         this.conn.connection.on('close', err => {
-            console.log('connection closed', err)
+            logger.error('connection closed', err)
+
+            this.conn.isUp = false
 
             this.connect()
         })
         
         this.conn.connection.on('error', err => {
-            console.log('connection error', err)
+            logger.error('connection error', err)
+
+            this.conn.isUp = false
 
             this.connect()
         })
-    }
-    
-    public static async getInstance(): Promise<SingletRabbitConn> {
-        if(!SingletRabbitConn.instance) {
-            SingletRabbitConn.instance = new SingletRabbitConn()
-            await SingletRabbitConn.instance.connect()
-        }
-
-        return SingletRabbitConn.instance
     }
 
     public async subscribe(queue: string, consumer: string, msgHandler: any): Promise<void> {
@@ -79,13 +90,15 @@ class SingletRabbitConn {
 
     private async newChannel(): Promise<any> {
         try {
+            if(!this.conn || !this.conn.isUp) await this.connect()
+
             return await this.conn.createChannel()
         } catch(err) {
-            logger.info("error on try to get a new channel ", err)
+            logger.error("error on try to get a new channel ", err)
 
             throw err
         }
     }
 }
 
-export default SingletRabbitConn
+export default new SingletRabbitConn()
