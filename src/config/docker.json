@@ -1,7 +1,12 @@
 {
     "data": {
         "amqp": {
-            "connStr": "amqp://guest:guest@js-rabbit-mq:5672"
+            "connStr": "amqp://guest:guest@js-rabbit-mq:5672",
+            "connRetry": {
+                "sleep": 4000,
+                "maxTries": 10
+            },
+            "exitOnLostConnection": true
         }
     },
     "presentation": {
