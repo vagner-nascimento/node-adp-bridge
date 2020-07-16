@@ -4,10 +4,12 @@ import startRestPresentation from "../presentation/rest/Server"
 
 import { loadConfig } from "../config"
 
-export default async (): Promise<void> => {
-    const conf = loadConfig()
-    
-    console.log("**CONFIGS**", JSON.stringify(conf))
+const conf = loadConfig()
+
+import logger from "../infra/logger"
+
+export default async (): Promise<void> => {   
+    logger.info("**CONFIGS**", JSON.stringify(conf))
 
     await subscribeConsumers()
     await startRestPresentation()

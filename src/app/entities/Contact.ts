@@ -6,8 +6,8 @@ export default class Contact {
         this.email = email
     }
 
-    public id: string
-    public name: string
-    public phone: string
-    public email: string
+    id: string
+    name: string
+    phone: string
+    email: string
 }

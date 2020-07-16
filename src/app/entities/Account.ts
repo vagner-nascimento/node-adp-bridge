@@ -34,19 +34,19 @@ export default class Account {
         this.credit_limit = credit_limit
     }
 
-    public type: string
-    public id: string
-    public name: string
-    public updated_date: Date
-    public is_active: boolean
-    public last_payment_date: Date
-    public merchant_id: string
-    public legal_document: string
-    public contacts: Contact[]
-    public country: string
-    public billing_day: number
-    public financial_accounts: MerchantAccount[]
-    public credit_limit: number
+    type: string
+    id: string
+    name: string
+    updated_date: Date
+    is_active: boolean
+    last_payment_date: Date
+    merchant_id: string
+    legal_document: string
+    contacts: Contact[]
+    country: string
+    billing_day: number
+    financial_accounts: MerchantAccount[]
+    credit_limit: number
 }
 
 export function makeAccountFromMerchant(merchant: Merchant): Account {

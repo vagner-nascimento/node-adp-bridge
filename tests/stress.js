@@ -16,7 +16,7 @@ const timeOutMs = process.env.MS_TIMEOUT ? Number(process.env.MS_TIMEOUT) : 8000
 let msgProcessed = 0
 
 const connect = async () => {
-    let connStr = env === "docker" ? "amqp://guest:guest@js-rabbit-mq:5672" : "amqp://guest:guest@localhost:5672"
+    let connStr = env === "docker" ? "amqp://guest:guest@rabbit-mq:5672" : "amqp://guest:guest@localhost:5672"
 
     return await amqp.connect(connStr)
 }
@@ -68,7 +68,7 @@ const pubMerchants = async conn => {
 const consumeAccounts = async conn => {
     const ch = await conn.createChannel()
     
-    const qAcc = 'q-accounts'
+    const qAcc = "q-accounts"
     const msgHandler = async () => {
         msgProcessed++
         console.log(`event on - processed ${msgProcessed} messages`)
@@ -84,12 +84,12 @@ const getTimeInMinutes = millis => {
     const minutes = Math.floor(millis / 60000)
     const seconds = ((millis % 60000) / 1000).toFixed(0)
 
-    return minutes + ":" + (seconds < 10 ? '0' : '') + seconds
+    return minutes + ":" + (seconds < 10 ? "0" : "") + seconds
 }
 
 const runWithConsume = async () => {
     const conn = await connect()
-    console.log('successfully connected on amqp server')
+    console.log("successfully connected on amqp server")
     
     await consumeAccounts(conn)
 
@@ -104,7 +104,7 @@ const runWithConsume = async () => {
             console.log(`all ${qtdMer + qtdSell} messages were published`)
         })
 
-    // TODO count doesn't work, realise how to consume and count to automatize this test
+    // TODO count doesn"t work, realise how to consume and count to automatize this test
     const totalSent = qtdSell + qtdMer
     let success = false
 
@@ -125,7 +125,7 @@ const runWithConsume = async () => {
 
 const runWithoutConsume = async () => {
     const conn = await connect()
-    console.log('successfully connected on amqp server')
+    console.log("successfully connected on amqp server")
 
     const selPromise = pubSellers(conn)
     const merPromise = pubMerchants(conn)
@@ -142,10 +142,10 @@ const start = async () => {
 
 start()
     .then(() => {
-        console.log('stress test finished')
+        console.log("stress test finished")
         process.exit(0)
     })
     .catch(err => {
-        console.log('error on process test', JSON.stringify(err))
+        console.log("error on process test", JSON.stringify(err))
         process.exit(1)
     })

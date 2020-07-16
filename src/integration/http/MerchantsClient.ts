@@ -1,5 +1,7 @@
 import httpStatus from "http-status"
 
+import logger from "../../infra/logger"
+
 import HttpClient from "../../infra/data/http/HttpClient"
 
 import { isRequestFailed } from "./response/HttpResponse"
@@ -25,25 +27,25 @@ export default class MerchantsClient extends HttpClient {
             const res = await super.get(request)
 
             if(res.status === httpStatus.NO_CONTENT) {
-                console.log(`${this.getCallName(this.getMerchant)} - returned ${res.status} without data`)
+                logger.info(`${this.getCallName(this.getMerchant)} - returned ${res.status} without data`)
 
                 return null
             }
 
             if(isRequestFailed(res.status)) {
                 const msg = `${this.getCallName(this.getMerchant)} - request failed with status ${res.status} and error `
-                console.log(msg, res.error)
+                logger.info(msg, res.error)
 
                 if(res.status === httpStatus.NOT_FOUND) return null
 
                 throw defaultError
             }
 
-            console.log(`${this.getCallName(this.getMerchant)} - response data `, res.data)
+            logger.info(`${this.getCallName(this.getMerchant)} - response data `, res.data)
 
             return new Merchant(res.data)
         } catch(err) {
-            console.log(`${this.getCallName(this.getMerchant)} - error `, err)
+            logger.info(`${this.getCallName(this.getMerchant)} - error `, err)
 
             throw defaultError
         }
