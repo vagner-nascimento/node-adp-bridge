@@ -19,7 +19,7 @@ class SingletRabbitConn {
 
             this.conn = await amqp.connect(this.connStr)
             
-            this.setEvenHandlers()
+            this.setEventsHandler()
 
             logger.info("successfully connected on rabbitmq")
         } catch(err) {
@@ -30,7 +30,7 @@ class SingletRabbitConn {
         }
     }
 
-    private setEvenHandlers(){
+    private setEventsHandler(){
         //TODO: subscribe consumers again when reconnect
         this.conn.connection.on('close', err => {
             console.log('connection closed', err)
