@@ -13,7 +13,9 @@ const getSubscriptions = (): Subscription[] => {
 }
 
 export default async function(): Promise<void> {
-    eventEmiter.addListener(AppEvent.AMQP_CONNECTED, async () => {
+    await subscribeConsumers(getSubscriptions())
+
+    eventEmiter.addListener(AppEvent.AMQP_RECONNECTED, async () => {
         await subscribeConsumers(getSubscriptions())
     })
 }

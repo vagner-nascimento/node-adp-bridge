@@ -1,5 +1,4 @@
 import { loadConfig } from "../config"
-
 const conf = loadConfig()
 
 import subscribeConsumers from "../integration/amqp/Subscriber"
