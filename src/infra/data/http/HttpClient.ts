@@ -1,7 +1,7 @@
 import axios from "axios"
 import httpStatus from "http-status"
 
-export default class HttpClient {
+export default abstract class HttpClient {
     constructor({ baseUrl, timeout = 10000 }) {
         this.instance = axios.create({
             baseURL: baseUrl,
