@@ -1,4 +1,4 @@
-import SingletRabbitConn from "../data/rabbitmq/SingletRabbitConn"
+import RabbitServer from "../data/rabbitmq/RabbitServer"
 
 //TODO realise how to import using relative path (src/.../.../Etc) with NODE_PATH=.
 import AccountDataHandler from "../../app/interfaces/AccountDataHandler"
@@ -35,7 +35,7 @@ export class AccountRepository implements AccountDataHandler {
     private accountTopic: string
 
     async Save(acc: Account): Promise<Account> {
-        await SingletRabbitConn.publish(this.accountTopic, JSON.stringify(acc))
+        await RabbitServer.publish(this.accountTopic, JSON.stringify(acc))
         
         logger.info("account saved ", acc)
 

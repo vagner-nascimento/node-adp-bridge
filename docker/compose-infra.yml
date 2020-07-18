@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   js-rabbit-mq:
-    container_name: rabbit-mq
+    container_name: js-rabbit-mq
     image: rabbitmq:3.6-management-alpine
     ports:
       - 5672:5672

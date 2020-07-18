@@ -31,7 +31,7 @@ class Logger {
         console.info(this.getFormattedMsg(msg), data)
     }
 
-    private getFormattedMsg(msg: string) {
+    private getFormattedMsg(msg: string): string {
         return `${new Date().toISOString().replace("T"," ")} - ${msg}`
     }
 }

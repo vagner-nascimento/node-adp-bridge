@@ -1,4 +1,4 @@
-import SingletRabbitConn from "../data/rabbitmq/SingletRabbitConn"
+import RabbitServer from "../data/rabbitmq/RabbitServer"
 
 export interface Subscription {
     getTopic(): string
@@ -6,8 +6,8 @@ export interface Subscription {
     getHandler(): Function
 }
 
-export async function subscribeAll(subs: Subscription[]): Promise<void> {
+export async function subscribeConsumers(subs: Subscription[]): Promise<void> {
     for(const sub of subs) {
-        await SingletRabbitConn.subscribe(sub.getTopic(), sub.getConsumer(), sub.getHandler())
+        await RabbitServer.subscribe(sub.getTopic(), sub.getConsumer(), sub.getHandler())
     }
 }

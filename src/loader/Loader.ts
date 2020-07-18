@@ -6,7 +6,6 @@ import subscribeConsumers from "../integration/amqp/Subscriber"
 
 import startRestPresentation from "../presentation/rest/Server"
 
-
 import logger from "../infra/logger"
 
 export default async (): Promise<void> => {   

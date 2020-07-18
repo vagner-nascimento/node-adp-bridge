@@ -2,17 +2,18 @@ import amqp from "amqplib"
 
 import logger from "../../logger"
 
-import eventEmiter from "../../../tools/EventEmiter"
+import { AppEvent, AppEventsEmiter as eventEmiter } from "../../../events"
 
 import sleep from "../../../tools/Sleep"
 
 import ApplicationError from '../../../error/ApplicationError';
 
-const { config } = require("../../../config") //import doesn't works here
+//"import" doesn't works for config here because it is null into constructor
+const { config } = require("../../../config")
 
-class SingletRabbitConn {
+class RabbitServer {
     public constructor() {
-        this.connStr = config.data.amqp.connStr        
+        this.connStr = config.data.amqp.connStr
         this.conn = { isUp: false }
 
         const {
@@ -42,7 +43,7 @@ class SingletRabbitConn {
 
                 this.setEventsHandler()
 
-                eventEmiter.emit("AmqpConnected")
+                eventEmiter.emit(AppEvent.AMQP_CONNECTED)
 
                 logger.info("successfully connected into rabbitmq")
 
@@ -122,4 +123,4 @@ class SingletRabbitConn {
     }
 }
 
-export default new SingletRabbitConn()
+export default new RabbitServer()
