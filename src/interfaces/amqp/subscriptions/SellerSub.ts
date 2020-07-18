@@ -1,16 +1,14 @@
 import { config } from "../../../config"
 
-import logger from "../../../infra/logger"
-
 import addAccount from "./AddAccount"
 
 import { Subscription } from "../../../infra/repositories/AmqpRepository"
 
-export class MerchantSub implements Subscription {
+export class SellerSub implements Subscription {
     constructor() {
-        this.topic = config.integration.amqp.sub.merchant.topic
-        this.consumer = config.integration.amqp.sub.merchant.consumer
-    }
+        this.topic = config.integration.amqp.sub.seller.topic
+        this.consumer = config.integration.amqp.sub.seller.consumer
+    }    
 
     private topic: string
     private consumer: string

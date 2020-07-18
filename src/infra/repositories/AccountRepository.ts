@@ -3,9 +3,9 @@ import RabbitServer from "../data/rabbitmq/RabbitServer"
 //TODO realise how to import using relative path (src/.../.../Etc) with NODE_PATH=.
 import AccountDataHandler from "../../app/interfaces/AccountDataHandler"
 
-import MerchantsClient from "../../integration/http/MerchantsClient"
-import MerchantAccountsClient from "../../integration/http/MerchantAccountsClient"
-import AffiliationsClient from "../../integration/http/AffiliationsClient"
+import MerchantsClient from "../../integration/rest/MerchantsClient"
+import MerchantAccountsClient from "../../integration/rest/MerchantAccountsClient"
+import AffiliationsClient from "../../integration/rest/AffiliationsClient"
 
 import Account from "../../app/entities/Account"
 import Merchant from "../../app/entities/Merchant"

@@ -1,9 +1,9 @@
 import { loadConfig } from "../config"
 const conf = loadConfig()
 
-import subscribeConsumers from "../integration/amqp/Subscriber"
+import subscribeConsumers from "../interfaces/amqp/Subscriber"
 
-import startRestPresentation from "../presentation/rest/Server"
+import startRestPresentation from "../interfaces/rest/Server"
 
 import logger from "../infra/logger"
 

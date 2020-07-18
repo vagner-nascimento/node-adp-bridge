@@ -77,7 +77,7 @@ class RabbitServer {
         })
     }
 
-    private reConnect(msg: string, err: Error) {
+    private reConnect(msg: string, err: Error): void {
         logger.error(msg, err)
 
         this.rbConn.isConnected = false
@@ -104,9 +104,9 @@ class RabbitServer {
             await ch.assertQueue(queue, { durable: false })
             await ch.consume(queue, msgHandler, { noAck: true, consumerTag: consumer })
 
-            logger.info(`subscribed on amqp queue ${queue}`)
+            logger.info(`consumer ${consumer} subscribed into amqp topic ${queue}`)
         } catch(err) {
-            logger.error(`error on subscribe on amqp queue ${queue}`, err)
+            logger.error(`error on subscribe ${consumer} into amqp topic ${queue}`, err)
 
             throw err
         }

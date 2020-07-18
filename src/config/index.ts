@@ -5,7 +5,8 @@ const  loadConfig = (): any => {
     
     config = {}
 
-    let env = process.env.NODE_ENV    
+    let env = process.env.NODE_ENV
+    
     if(env) env = env.toLowerCase()
     else {
         env = "LOCAL"
