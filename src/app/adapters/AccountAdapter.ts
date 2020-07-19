@@ -1,9 +1,9 @@
 import AccountDataHandler from "../interfaces/AccountDataHandler"
 
 import createAccount from "../usecases/CreateAccount"
+import { getEnrichmentStrategy } from "../usecases/EnrichAccountData"
 
 import Account from "../entities/Account"
-import { getEnrichmentStrategy } from "../usecases/EnrichAccountData"
 
 export class AccountAdapter {
     constructor(repository: AccountDataHandler) {

@@ -8,8 +8,15 @@ import { isRequestFailed } from "./response/HttpResponse"
 
 import Affiliation from "../../app/entities/Affiliation"
 
-export default class AffiliationsClient extends HttpClient {
-    constructor({ baseUrl, timeout }) {
+import { config } from "../../config"
+
+class AffiliationsClient extends HttpClient {
+    constructor() {
+        const {
+            baseUrl,
+            timeout
+        } = config.integration.rest.affiliations
+
         super({ baseUrl, timeout })
     }
 
@@ -57,3 +64,5 @@ export default class AffiliationsClient extends HttpClient {
         return `${this.constructor.name}.${fn.name}`
     }
 }
+
+export default new AffiliationsClient()

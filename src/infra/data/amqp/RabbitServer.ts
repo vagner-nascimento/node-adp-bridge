@@ -7,13 +7,15 @@ import { AppEvent, AppEventsEmiter as eventEmiter } from "../../../events"
 import sleep from "../../../tools/Sleep"
 
 import ApplicationError from '../../../error/ApplicationError';
-import ms from '../../../tools/Sleep';
+
 import RabbitConnection from './RabbitConnection';
+
 import Retry from '../connection/Retry';
 
 //"import" doesn't works for config here because it is null into constructor
 const { config } = require("../../../config")
 
+// TODO: log amqplib erros and throw App Erros
 class RabbitServer {
     public constructor() {
         this.connStr = config.data.amqp.connStr
@@ -34,16 +36,17 @@ class RabbitServer {
     private connectedOnce: boolean
     private exitOnLostConn: boolean
 
-    private async connect(event: AppEvent = AppEvent.AMQP_CONNECTED): Promise<void> {
+    private async connect(notifyEvent: AppEvent = AppEvent.AMQP_CONNECTED): Promise<void> {
         for(let current = 1; current <= this.retry.maxTries; current++) {
             try {
                 logger.info("connecting into rabbitmq")
 
                 this.rbConn.conn = await amqpLib.connect(this.connStr)
                 this.rbConn.isConnected = true
-
+                
                 this.setConnEventHandlers()
-                eventEmiter.emit(event)
+                eventEmiter.emit(notifyEvent)
+                
                 logger.info("successfully connected into rabbitmq")
 
                 break
@@ -112,12 +115,12 @@ class RabbitServer {
         }
     }
 
-    public async publish(queue: string, data: any): Promise<void> {        
+    public async publish(queue: string, data: any): Promise<void> {
         try {
             const ch = await this.newChannel()
 
             await ch.assertQueue(queue, { durable: false })
-            await ch.sendToQueue(queue, Buffer.from(data))            
+            await ch.sendToQueue(queue, Buffer.from(data))
             await ch.close()
         } catch(err) {
             logger.error(`error on to publish data into ${queue} `, err)

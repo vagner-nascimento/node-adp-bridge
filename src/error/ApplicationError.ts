@@ -4,7 +4,7 @@ export default class ApplicationError implements Error {
         this.originError = originErr
         this.details = details
     }
-
+    
     name: string
     message: string
     stack?: string

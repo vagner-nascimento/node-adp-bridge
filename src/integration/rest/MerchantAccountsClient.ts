@@ -8,8 +8,15 @@ import { isRequestFailed } from "./response/HttpResponse"
 
 import MerchantAccount from "../../app/entities/MerchantAccount"
 
-export default class MerchantAccountsClient extends HttpClient {
-    constructor({ baseUrl, timeout }) {
+import { config } from "../../config"
+
+class MerchantAccountsClient extends HttpClient {
+    constructor() {
+        const {
+            baseUrl,
+            timeout
+        } = config.integration.rest.affiliations
+
         super({ baseUrl, timeout })
     }
 
@@ -46,7 +53,7 @@ export default class MerchantAccountsClient extends HttpClient {
 
             return res.data.map(d => new MerchantAccount(d))
         } catch(err) {
-            logger.info(`${this.getCallName(this.getByMerchant)} - error `, err)
+            logger.error(`${this.getCallName(this.getByMerchant)} - error `, err)
 
             throw defaultError
         }
@@ -83,7 +90,7 @@ export default class MerchantAccountsClient extends HttpClient {
 
             return new MerchantAccount(res.data)
         } catch(err) {
-            logger.info(`${this.getCallName(this.getAccount)} - error `, err)
+            logger.error(`${this.getCallName(this.getAccount)} - error `, err)
 
             throw defaultError
         }
@@ -93,3 +100,5 @@ export default class MerchantAccountsClient extends HttpClient {
         return `${this.constructor.name}.${fn.name}`
     }
 }
+
+export default new MerchantAccountsClient()

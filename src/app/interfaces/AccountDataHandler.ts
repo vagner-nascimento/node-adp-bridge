@@ -1,7 +1,4 @@
-import Account from "../entities/Account"
-import Merchant from "../entities/Merchant"
-import MerchantAccount from "../entities/MerchantAccount"
-import Affiliation from "../entities/Affiliation"
+import { Account, Merchant, MerchantAccount, Affiliation } from "../entities"
 
 export default interface AccountDataHandler {
     Save(acc: Account): Promise<Account>

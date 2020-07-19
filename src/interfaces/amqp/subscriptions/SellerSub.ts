@@ -4,6 +4,8 @@ import addAccount from "./AddAccount"
 
 import { Subscription } from "../../../infra/repositories/AmqpRepository"
 
+import logger from "../../../infra/logger"
+
 export class SellerSub implements Subscription {
     constructor() {
         this.topic = config.integration.amqp.sub.seller.topic
@@ -23,7 +25,17 @@ export class SellerSub implements Subscription {
 
     getHandler(): Function {
         return async (msg) => {
-            await addAccount(msg.content)
+            try {
+                const jsonData = JSON.parse(msg.content)
+
+                logger.info(`${this.constructor.name} - message data received `, jsonData)
+
+                const acc = await addAccount(jsonData)
+
+                logger.info(`${this.constructor.name} - account added`, acc)
+            } catch(err) {
+
+            }
         }
     }
 }

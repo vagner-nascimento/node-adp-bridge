@@ -8,8 +8,15 @@ import { isRequestFailed } from "./response/HttpResponse"
 
 import Merchant from "../../app/entities/Merchant"
 
-export default class MerchantsClient extends HttpClient {
-    constructor({ baseUrl, timeout }) {
+import { config } from "../../config"
+
+class MerchantsClient extends HttpClient {
+    constructor() {
+        const {
+            baseUrl,
+            timeout
+        } = config.integration.rest.affiliations
+
         super({ baseUrl, timeout })
     }
     
@@ -55,3 +62,5 @@ export default class MerchantsClient extends HttpClient {
         return `${this.constructor.name}.${fn.name}`
     }
 }
+
+export default new MerchantsClient()

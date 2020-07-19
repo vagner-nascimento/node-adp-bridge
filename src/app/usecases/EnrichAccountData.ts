@@ -1,12 +1,8 @@
-import Merchant from "../entities/Merchant"
-import Account from "../entities/Account"
-import AccountType from "../entities/AccountType"
-import MerchantAccount from "../entities/MerchantAccount"
+import { Affiliation, Merchant, Account, AccountType, MerchantAccount } from "../entities"
 
 import { safeExec } from "../../tools/Async"
 
 import AccountDataHandler from "../interfaces/AccountDataHandler"
-import Affiliation from "../entities/Affiliation"
 
 const getSellerEnrichAccount = (acc: Account, merchant: Merchant, mAcc: MerchantAccount): Account => {
     const lAcc = Object.assign({}, acc)

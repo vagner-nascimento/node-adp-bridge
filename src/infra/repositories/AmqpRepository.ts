@@ -1,4 +1,4 @@
-import RabbitServer from "../data/rabbitmq/RabbitServer"
+import RabbitServer from "../data/amqp/RabbitServer"
 
 export interface Subscription {
     getTopic(): string
