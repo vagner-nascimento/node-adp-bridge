@@ -117,6 +117,8 @@ class RabbitServer {
 
     public async publish(queue: string, data: any): Promise<void> {
         try {
+            logger.info(`${this.constructor.name}.${this.publish.name} - data to send to topic ${queue}: `, data)
+
             const ch = await this.newChannel()
 
             await ch.assertQueue(queue, { durable: false })

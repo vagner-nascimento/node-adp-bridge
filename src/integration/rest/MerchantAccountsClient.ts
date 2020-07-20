@@ -15,7 +15,7 @@ class MerchantAccountsClient extends HttpClient {
         const {
             baseUrl,
             timeout
-        } = config.integration.rest.affiliations
+        } = config.integration.rest.merchantsAccounts
 
         super({ baseUrl, timeout })
     }
@@ -39,22 +39,15 @@ class MerchantAccountsClient extends HttpClient {
             }
 
             if(isRequestFailed(res.status)) {
-                const msg = `${this.getCallName(this.getByMerchant)} - request failed with status ${res.status} and error `
-                logger.info(msg, res.error)
-
                 if(res.status === httpStatus.NOT_FOUND) return []
 
                 throw defaultError
             }
 
-            logger.info(`${this.getCallName(this.getByMerchant)} - response data `, res.data)
-
             if(!Array.isArray(res.data)) throw new Error(`${this.getCallName(this.getByMerchant)} - unexpedted non array response`)
 
             return res.data.map(d => new MerchantAccount(d))
         } catch(err) {
-            logger.error(`${this.getCallName(this.getByMerchant)} - error `, err)
-
             throw defaultError
         }
     }
@@ -78,20 +71,13 @@ class MerchantAccountsClient extends HttpClient {
             }
 
             if(isRequestFailed(res.status)) {
-                const msg = `${this.getCallName(this.getAccount)} - request failed with status ${res.status} and error `
-                logger.info(msg, res.error)
-
                 if(res.status === httpStatus.NOT_FOUND) return null
 
                 throw defaultError
             }
 
-            logger.info(`${this.getCallName(this.getAccount)} - response data `, res.data)
-
             return new MerchantAccount(res.data)
         } catch(err) {
-            logger.error(`${this.getCallName(this.getAccount)} - error `, err)
-
             throw defaultError
         }
     }

@@ -34,7 +34,7 @@ export class SellerSub implements Subscription {
 
                 logger.info(`${this.constructor.name} - account added`, acc)
             } catch(err) {
-
+                logger.error(`${this.constructor.name} - error on try to add account`, err)
             }
         }
     }

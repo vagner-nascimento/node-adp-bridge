@@ -25,13 +25,17 @@ export class MerchantSub implements Subscription {
 
     getHandler(): Function {
         return async (msg) => {
-            const jsonData = JSON.parse(msg.content)
+            try {
+                const jsonData = JSON.parse(msg.content)
 
-            logger.info(`${this.constructor.name} - message data received `, jsonData)
+                logger.info(`${this.constructor.name} - message data received `, jsonData)
 
-            const acc = await addAccount(jsonData)
-            
-            logger.info(`${this.constructor.name} - account added`, acc)
+                const acc = await addAccount(jsonData)
+                
+                logger.info(`${this.constructor.name} - account added`, acc)
+            } catch(err) {
+                logger.error(`${this.constructor.name} - error on try to add account`, err)
+            }
         }
     }
 }

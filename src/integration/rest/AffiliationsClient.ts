@@ -39,23 +39,17 @@ class AffiliationsClient extends HttpClient {
             }
 
             if(isRequestFailed(res.status)) {
-                const msg = `${this.getCallName(this.getByMerchant)} - request failed with status ${res.status} and error `
-                logger.info(msg, res.error)
-
                 if(res.status === httpStatus.NOT_FOUND) return null
 
                 throw defaultError
             }
-
-            logger.info(`${this.getCallName(this.getByMerchant)} - response data `, res.data)
             
             const affData = res.data[0]
+
             if(!affData) return null
 
             return new Affiliation(res.data[0])
         } catch(err) {
-            logger.info(`${this.getCallName(this.getByMerchant)} - error `, err)
-
             throw defaultError
         }
     }

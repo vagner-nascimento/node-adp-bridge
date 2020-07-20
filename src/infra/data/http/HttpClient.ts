@@ -1,5 +1,6 @@
 import axios from "axios"
 import httpStatus from "http-status"
+import logger from "../../logger"
 
 export default abstract class HttpClient {
     constructor({ baseUrl, timeout = 10000 }) {
@@ -22,17 +23,27 @@ export default abstract class HttpClient {
         params: any = null,
         data: any = null
     ): Promise<any> {
-        try {
-            return await this.instance({ method, headers, url, params, data })
-        } catch(error) {
-            if(error.isAxiosError) {
-                if(error.response)
-                    return { error, status: error.response.status, data: null }
+        const completeUrl = `${this.instance.defaults.baseURL}${url || ""}${params ? "/" + Object.entries(params).map(([k, v]) => `${k}=${v}`).join("&") : ""}`
 
-                return { error, status: httpStatus.SERVICE_UNAVAILABLE, data: null }
+        try {
+            const res = await this.instance({ method, headers, url, params, data })
+            
+            logger.info(`Http ${method} - the cal to the ${completeUrl} retutned status ${res.status} and response data: `, res.data)
+
+            return res
+        } catch(error) {
+            let status = null
+            
+            if(error.isAxiosError) {
+                if(error.response) status = error.response.status
+                else status = httpStatus.SERVICE_UNAVAILABLE
+            } else {
+                status = httpStatus.INTERNAL_SERVER_ERROR
             }
 
-            return { error, status: httpStatus.INTERNAL_SERVER_ERROR, data: null }
+            logger.error(`Http ${method} - error with status ${status} on call ${completeUrl}. error: `, error.message)
+
+            return { error, status, data: null }
         }
     }
 }

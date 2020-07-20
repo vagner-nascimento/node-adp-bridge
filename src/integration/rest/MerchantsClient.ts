@@ -15,7 +15,7 @@ class MerchantsClient extends HttpClient {
         const {
             baseUrl,
             timeout
-        } = config.integration.rest.affiliations
+        } = config.integration.rest.merchants
 
         super({ baseUrl, timeout })
     }
@@ -40,15 +40,10 @@ class MerchantsClient extends HttpClient {
             }
 
             if(isRequestFailed(res.status)) {
-                const msg = `${this.getCallName(this.getMerchant)} - request failed with status ${res.status} and error `
-                logger.info(msg, res.error)
-
                 if(res.status === httpStatus.NOT_FOUND) return null
 
                 throw defaultError
             }
-
-            logger.info(`${this.getCallName(this.getMerchant)} - response data `, res.data)
 
             return new Merchant(res.data)
         } catch(err) {
