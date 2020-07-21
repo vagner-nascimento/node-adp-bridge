@@ -1,7 +1,5 @@
 import { Affiliation, Merchant, Account, AccountType, MerchantAccount } from "../entities"
 
-import { safeExec } from "../../tools/Async"
-
 import AccountDataHandler from "../interfaces/AccountDataHandler"
 
 const getSellerEnrichAccount = (acc: Account, merchant: Merchant, mAcc: MerchantAccount): Account => {
@@ -22,41 +20,36 @@ const getMerchantEnrichAccount = (acc: Account, mAcc: MerchantAccount[], aff: Af
     return lAcc
 }
 
-export function getEnrichmentStrategy(accTyp: string, repo: AccountDataHandler, originEntity: any): Function {
-    switch(accTyp) {
-        case AccountType.SELLER:
-            return async (acc: Account) => {
-                const mPromise = safeExec(repo.GetMerchant(originEntity.merchant_id))
-                const mAccPromise = safeExec(repo.GetMerchantAccount(originEntity.merchant_account_id))
+export default async (acc: any, repo: AccountDataHandler, originEntity: any): Promise<Account> => {
+    switch(acc.type) {
+        case AccountType.SELLER:            
+            const mPromise: Promise<any> = repo.GetMerchant(originEntity.merchant_id)
+            const mAccPromise: Promise<any> = repo.GetMerchantAccount(originEntity.merchant_account_id)
 
-                return Promise.all([mPromise, mAccPromise])
-                    .then(res => {
-                        let merchant = res[0]
-                        if(merchant instanceof Error) merchant = null
+            const selRes = await Promise.all([mPromise, mAccPromise].map(p => p.catch(e => e)))
+            
+            let merchant = selRes[0]
+            let selMAcc = selRes[1]
 
-                        let mAcc = res[1]
-                        if(mAcc instanceof Error) mAcc = null
+            if(merchant instanceof Error) merchant = null
+            if(selMAcc instanceof Error) selMAcc = null
 
-                        return getSellerEnrichAccount(acc, merchant, mAcc)
-                    })
-            }
+            return getSellerEnrichAccount(acc, merchant, selMAcc)
         case AccountType.MERCHANT:
-            return async (acc: Account) => {
-                const accPromise = safeExec(repo.GetMerchantAccounts(acc.id))
-                const affPromise = safeExec(repo.GetMerchantAffiliation(acc.id))
+            const accPromise: Promise<any> = repo.GetMerchantAccounts(acc.id)
+            const affPromise: Promise<any> =  repo.GetMerchantAffiliation(acc.id)
                     
-                return Promise.all([accPromise, affPromise])
-                    .then(res => {
-                        let mAcc = res[0]
-                        if(mAcc instanceof Error) mAcc = []
+            const res = await Promise.all([accPromise, affPromise].map(p => p.catch(e => e)))
 
-                        let aff = res[1]
-                        if(aff instanceof Error) aff = null
+            let merAccs = res[0]
+            let merAff = res[1]
+                
+            if(merAccs instanceof Error) merAccs = []
+            if(merAff instanceof Error) merAff = null
 
-                        return getMerchantEnrichAccount(acc, mAcc, aff)
-                    })
-            }
+            return getMerchantEnrichAccount(acc, merAccs, merAff)
         default:
-            return async (acc: Account) => (acc)
-    }
+            return acc
+ }
+
 }

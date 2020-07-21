@@ -1,22 +1,24 @@
 version: '3.7'
 
 services:
-  go-producer:
-    container_name: go-producer
+  js-stress-test:
+    container_name: js-stress-test
     build:
       context: .
       dockerfile: StressTestDockerFile
     depends_on:
       - js-rabbit-mq
     environment:
-      - GO_ENV=DOCKER
-      - QTD_SELL=5000
-      - QTD_MERCH=5000
-      - MINUTES_TIMEOUT=10
+      - NODE_ENV=docker
+      - NODE_PATH=.
+      - QTD_SELL=50000
+      - QTD_MERCH=50000
+      - MS_TIMEOUT=20000
+    restart: on-failure
     networks:
       - js-network
     command: >
-      bash -c "/scripts/wait-for-it.sh -s -t 30 js-rabbit-mq:5672 -- /app/main"
+      bash -c "/scripts/wait-for-it.sh -s -t 30 js-rabbit-mq:5672 -- node /app/stress.js"
 
   js-app:
     container_name: js-app
@@ -28,6 +30,7 @@ services:
     environment:
       - NODE_ENV=docker
       - NODE_PATH=.
+    restart: on-failure
     ports:
       - 3000:3000
     networks:
@@ -37,7 +40,7 @@ services:
 
   js-rabbit-mq:
     container_name: js-rabbit-mq
-    image: rabbitmq:3.6-management-alpine    
+    image: rabbitmq:3.6-management-alpine
     ports:
       - 5672:5672
       - 15672:15672

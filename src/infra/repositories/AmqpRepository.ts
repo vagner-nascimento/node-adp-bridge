@@ -1,4 +1,4 @@
-import RabbitServer from "../data/amqp/RabbitServer"
+import AmqpServer from "../data/amqp/AmqpServer"
 
 export interface Subscription {
     getTopic(): string
@@ -8,6 +8,6 @@ export interface Subscription {
 
 export async function subscribeConsumers(subs: Subscription[]): Promise<void> {
     for(const sub of subs) {
-        await RabbitServer.subscribe(sub.getTopic(), sub.getConsumer(), sub.getHandler())
+        await AmqpServer.subscribe(sub.getTopic(), sub.getConsumer(), sub.getHandler())
     }
 }

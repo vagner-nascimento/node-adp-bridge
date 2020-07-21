@@ -2,25 +2,28 @@ import amqpLib from "amqplib"
 
 import logger from "../../logger"
 
-import { AppEvent, AppEventsEmiter as eventEmiter } from "../../../events"
+import AppEventsEmiter from "../../../events/AppEventEmiter"
+
+import { AmqpEvents } from "./AmqpEventsEnum"
 
 import sleep from "../../../tools/Sleep"
 
 import ApplicationError from '../../../error/ApplicationError';
 
-import RabbitConnection from './RabbitConnection';
+import AmqpSingletonConnection from '../connection/AmqpSingletonConnection';
 
 import Retry from '../connection/Retry';
+import ms from '../../../tools/Sleep';
 
 //"import" doesn't works for config here because it is null into constructor
 const { config } = require("../../../config")
 
 // TODO: log amqplib erros and throw App Erros
-class RabbitServer {
+class AmqpServer {
     public constructor() {
         this.connStr = config.data.amqp.connStr
         this.exitOnLostConn = config.data.amqp.exitOnLostConnection
-        this.rbConn = new RabbitConnection()
+        this.rbConn = new AmqpSingletonConnection()
 
         const {
             sleep: msToSleep = 3000,
@@ -30,28 +33,27 @@ class RabbitServer {
         this.retry = new Retry(msToSleep, maxTries)
     }
     
-    private rbConn: RabbitConnection
+    private rbConn: AmqpSingletonConnection
     private retry: Retry
     private connStr: string
-    private connectedOnce: boolean
     private exitOnLostConn: boolean
 
-    private async connect(notifyEvent: AppEvent = AppEvent.AMQP_CONNECTED): Promise<void> {
+    private async connect(notifyEvent: AmqpEvents = AmqpEvents.AMQP_CONNECT): Promise<void> {
         for(let current = 1; current <= this.retry.maxTries; current++) {
             try {
-                logger.info("connecting into rabbitmq")
+                logger.info("connecting into amqp server")
 
                 this.rbConn.conn = await amqpLib.connect(this.connStr)
                 this.rbConn.isConnected = true
                 
                 this.setConnEventHandlers()
-                eventEmiter.emit(notifyEvent)
+                AppEventsEmiter.emit(notifyEvent)
                 
-                logger.info("successfully connected into rabbitmq")
+                logger.info("successfully connected into amqp server")
 
                 break
             } catch(err) {
-                logger.error("error on try to connection into rabbitmq ", err)
+                logger.error("error on try to connection into amqp server ", err)
                 
                 if(this.retry.maxTries > 1) {
                     const msg = `waiting ${this.retry.msToSleep} ms` +
@@ -64,38 +66,46 @@ class RabbitServer {
         }
 
         if(!this.rbConn.isConnected) {
-            logger.info("failed to connect into amqp server")
+            this.rbConn.isAlive = false
 
-            if(this.exitOnLostConn) process.exit(1)
+            logger.info("amqp server connection is lost forever")
+
+            if(this.exitOnLostConn) {
+                logger.info("amqp policy: shuting down de application")                
+                process.exit(1)
+            }
         }
     }
-
+    RabbitConnection
     private setConnEventHandlers() {
-        this.rbConn.conn.connection.on("close", err => {
-            this.reConnect("amqp connection closed", err)
+        this.rbConn.conn.connection.on("close", async err => {
+            await this.reConnect("amqp connection closed", err)
         })
         
-        this.rbConn.conn.connection.on("error", err => {
-            this.reConnect("amqp connection error", err)
+        this.rbConn.conn.connection.on("error", async err => {
+            await this.reConnect("amqp connection error", err)
         })
     }
 
-    private reConnect(msg: string, err: Error): void {
-        logger.error(msg, err)
-
+    private async reConnect(msg: string, err: Error) {
         this.rbConn.isConnected = false
+
+        logger.error(msg, err)
         
-        this.connect(AppEvent.AMQP_RECONNECTED)
+        await this.connect(AmqpEvents.AMQP_RECONNECT)
     }
 
     private async newChannel(): Promise<any> {
-        if(!this.connectedOnce) {
+        if(!this.rbConn.connOnce) {
             await this.connect()
-                
-            this.connectedOnce = true
+            
+            this.rbConn.isAlive = true
+            this.rbConn.connOnce = true
         }
 
-        if(this.rbConn.isConnected) return await this.rbConn.conn.createChannel()
+        while(this.rbConn.isAlive) {
+            if(this.rbConn.isConnected) return await this.rbConn.conn.createChannel()
+        }
 
         throw new ApplicationError("error on try to get a new amqp channel")
     }
@@ -106,12 +116,15 @@ class RabbitServer {
                 
             await ch.assertQueue(queue, { durable: false })
             await ch.consume(queue, msgHandler, { noAck: true, consumerTag: consumer })
+            // await ch.close()
 
             logger.info(`consumer ${consumer} subscribed into amqp topic ${queue}`)
         } catch(err) {
+            const msg = `error on subscribe ${consumer} into amqp topic ${queue}`
+
             logger.error(`error on subscribe ${consumer} into amqp topic ${queue}`, err)
 
-            throw err
+            throw new ApplicationError(msg)
         }
     }
 
@@ -125,11 +138,13 @@ class RabbitServer {
             await ch.sendToQueue(queue, Buffer.from(data))
             await ch.close()
         } catch(err) {
-            logger.error(`error on to publish data into ${queue} `, err)
+            const msg = `error on to publish data into ${queue} `
+            
+            logger.error(msg, err)
 
-            throw err
+            throw new ApplicationError(msg)
         }
     }
 }
 
-export default new RabbitServer()
+export default new AmqpServer()

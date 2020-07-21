@@ -1,6 +1,6 @@
 import events from "events"
 
-import AppEvent from './AppEventsEnum';
+import { AmqpEvents } from '../infra/data/amqp/AmqpEventsEnum';
 
 class AppEventEmiter {
     constructor(){
@@ -9,11 +9,11 @@ class AppEventEmiter {
 
     private eventEmiter: events.EventEmitter
     
-    public addListener(event: AppEvent, handler: (...args: any[]) => void): events.EventEmitter {
+    public addListener(event: AmqpEvents, handler: (...args: any[]) => void): events.EventEmitter {
         return this.eventEmiter.addListener(event, handler)
     }
 
-    public emit(event: AppEvent, ...args: any[]): boolean {
+    public emit(event: AmqpEvents, ...args: any[]): boolean {
         return this.eventEmiter.emit(event, args)
     }
 }

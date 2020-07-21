@@ -3,7 +3,9 @@ import { SellerSub } from "./subscriptions/SellerSub"
 
 import { subscribeConsumers, Subscription } from "../../infra/repositories/AmqpRepository"
 
-import { AppEvent, AppEventsEmiter as eventEmiter } from "../../events"
+import { AmqpEvents } from '../../infra/data/amqp/AmqpEventsEnum';
+
+import AppEventsEmiter from "../../events/AppEventEmiter"
 
 const getSubscriptions = (): Subscription[] => {
     return [
@@ -15,7 +17,7 @@ const getSubscriptions = (): Subscription[] => {
 export default async function(): Promise<void> {
     await subscribeConsumers(getSubscriptions())
 
-    eventEmiter.addListener(AppEvent.AMQP_RECONNECTED, async () => {
+    AppEventsEmiter.addListener(AmqpEvents.AMQP_RECONNECT, async () => {
         await subscribeConsumers(getSubscriptions())
     })
 }

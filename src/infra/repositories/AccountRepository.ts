@@ -1,4 +1,4 @@
-import RabbitServer from "../data/amqp/RabbitServer"
+import AmqpServer from "../data/amqp/AmqpServer"
 
 //TODO realise how to import using relative path (src/.../.../Etc) with NODE_PATH=.
 import AccountDataHandler from "../../app/interfaces/AccountDataHandler"
@@ -17,7 +17,7 @@ export class AccountRepository implements AccountDataHandler {
     private accountTopic: string
 
     async Save(acc: Account): Promise<Account> {
-        await RabbitServer.publish(this.accountTopic, JSON.stringify(acc))
+        await AmqpServer.publish(this.accountTopic, JSON.stringify(acc))
         
         return acc
     }
