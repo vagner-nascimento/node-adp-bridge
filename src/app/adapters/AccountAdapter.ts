@@ -23,6 +23,6 @@ export class AccountAdapter {
         const acc = createAccount(data)
         const enrichedAccount = await getEnrichedAccountData(acc, this.repo, data)
                         
-        return await this.repo.Save(enrichedAccount)
+        return await this.repo.save(enrichedAccount)
     }
 }

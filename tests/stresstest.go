@@ -42,7 +42,7 @@ Emitted 'error' event at:
     at Socket._destroy (net.js:613:3)
     at Socket.destroy (internal/streams/destroy.js:37:8)
     at WriteWrap.afterWrite [as oncomplete] (net.js:790:10)
-vagner@vnasc-note-sam:~$ 
+vagner@vnasc-note-sam:~$
 
 */
 import (
@@ -150,16 +150,16 @@ func runWithoutConsume() {
 // AMQP
 type connection struct {
 	conn    *amqp.Connection
+	ch 	*amqp.Channel
 	connect sync.Once
 	isAlive bool
 }
 
 var singletonConn connection
 
-func newChannel() (*amqp.Channel, error) {
+func getChannel() (*amqp.Channel, error) {
 	var (
 		err error
-		ch  *amqp.Channel
 	)
 
 	singletonConn.connect.Do(func() {
@@ -176,12 +176,12 @@ func newChannel() (*amqp.Channel, error) {
 	if err == nil {
 		if singletonConn.conn == nil || singletonConn.conn.IsClosed() {
 			panic("rabbit connection is closed")
-		} else {
-			ch, err = singletonConn.conn.Channel()
+		} else if singletonConn.ch == nil {
+			singletonConn.ch, err = singletonConn.conn.Channel()
 		}
 	}
 
-	return ch, err
+	return singletonConn.ch, err
 }
 
 func publishMsg(data []byte, topic string) error {
@@ -191,9 +191,7 @@ func publishMsg(data []byte, topic string) error {
 		err error
 	)
 
-	if ch, err = newChannel(); err == nil {
-		defer ch.Close()
-
+	if ch, err = getChannel(); err == nil {
 		qP, err = ch.QueueDeclare(
 			topic,
 			false,
@@ -283,7 +281,7 @@ func consumeAccounts() (error, *int) {
 		err       error
 	)
 
-	if ch, err = newChannel(); err == nil {
+	if ch, err = getChannel(); err == nil {
 		var q amqp.Queue
 		q, err = ch.QueueDeclare(
 			"q-accounts",

@@ -1,9 +1,9 @@
 import { Account, Merchant, MerchantAccount, Affiliation } from "../entities"
 
 export default interface AccountDataHandler {
-    Save(acc: Account): Promise<Account>
-    GetMerchant(merchantId: string): Promise<Merchant>
-    GetMerchantAccounts(merchantId: string): Promise<MerchantAccount[]>
-    GetMerchantAccount(accId: string): Promise<MerchantAccount>
-    GetMerchantAffiliation(merchantId: string): Promise<Affiliation>
+    save(acc: Account): Promise<Account>
+    getMerchant(merchantId: string): Promise<Merchant>
+    getMerchantAccounts(merchantId: string): Promise<MerchantAccount[]>
+    getMerchantAccount(accId: string): Promise<MerchantAccount>
+    getMerchantAffiliation(merchantId: string): Promise<Affiliation>
 }

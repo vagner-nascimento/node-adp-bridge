@@ -23,8 +23,8 @@ const getMerchantEnrichAccount = (acc: Account, mAcc: MerchantAccount[], aff: Af
 export default async (acc: any, repo: AccountDataHandler, originEntity: any): Promise<Account> => {
     switch(acc.type) {
         case AccountType.SELLER:            
-            const mPromise: Promise<any> = repo.GetMerchant(originEntity.merchant_id)
-            const mAccPromise: Promise<any> = repo.GetMerchantAccount(originEntity.merchant_account_id)
+            const mPromise: Promise<any> = repo.getMerchant(originEntity.merchant_id)
+            const mAccPromise: Promise<any> = repo.getMerchantAccount(originEntity.merchant_account_id)
 
             const selRes = await Promise.all([mPromise, mAccPromise].map(p => p.catch(e => e)))
             
@@ -36,8 +36,8 @@ export default async (acc: any, repo: AccountDataHandler, originEntity: any): Pr
 
             return getSellerEnrichAccount(acc, merchant, selMAcc)
         case AccountType.MERCHANT:
-            const accPromise: Promise<any> = repo.GetMerchantAccounts(acc.id)
-            const affPromise: Promise<any> =  repo.GetMerchantAffiliation(acc.id)
+            const accPromise: Promise<any> = repo.getMerchantAccounts(acc.id)
+            const affPromise: Promise<any> =  repo.getMerchantAffiliation(acc.id)
                     
             const res = await Promise.all([accPromise, affPromise].map(p => p.catch(e => e)))
 

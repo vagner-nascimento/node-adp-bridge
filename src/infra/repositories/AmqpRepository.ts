@@ -1,13 +1,13 @@
-import AmqpServer from "../data/amqp/AmqpServer"
+import AmqpSubscriber from "../data/amqp/AmqpSubscriber"
 
 export interface Subscription {
     getTopic(): string
     getConsumer(): string
-    getHandler(): Function
+    getHandler(): (data: any) => any
 }
 
-export async function subscribeConsumers(subs: Subscription[]): Promise<void> {
+export async function subscribeConsumers(subs: Subscription[]) {
     for(const sub of subs) {
-        await AmqpServer.subscribe(sub.getTopic(), sub.getConsumer(), sub.getHandler())
+        await AmqpSubscriber.subscribeConsumer(sub.getTopic(), sub.getConsumer(), sub.getHandler())
     }
 }

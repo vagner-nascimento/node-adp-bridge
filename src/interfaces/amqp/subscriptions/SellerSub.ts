@@ -23,7 +23,7 @@ export class SellerSub implements Subscription {
         return this.consumer
     }
 
-    getHandler(): Function {
+    getHandler(): (data: any) => any {
         return async (msg) => {
             try {
                 const jsonData = JSON.parse(msg.content)
