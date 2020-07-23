@@ -3,33 +3,32 @@ package main
 import (
 	"errors"
 	"fmt"
+	"github.com/streadway/amqp"
 	"io/ioutil"
 	"os"
 	"strconv"
 	"strings"
 	"sync"
-
-	"github.com/streadway/amqp"
+	"time"
 )
+
+func main() {
+	setTestParams()
+	runWithoutConsume()
+	//runWithConsume()
+}
 
 var (
 	qtdSellers   int
 	qtdMerchants int
+	testTimeOut  time.Duration
 )
-
-/*
-	TODO: not all msgs are published. Error:
-	channel closed Exception (505) Reason: "UNEXPECTED_FRAME - expected content body, got non content body frame instead"
-*/
-func main() {
-	setTestParams()
-	publishMessages()
-}
 
 func setTestParams() {
 	// default params
-	qtdSellers = 200
-	qtdMerchants = 200
+	qtdSellers = 100
+	qtdMerchants = 100
+	minutes := 1
 
 	// env params
 	if qtd := os.Getenv("QTD_SELL"); len(qtd) > 0 {
@@ -38,9 +37,56 @@ func setTestParams() {
 	if qtd := os.Getenv("QTD_MERCH"); len(qtd) > 0 {
 		qtdMerchants, _ = strconv.Atoi(qtd)
 	}
+	if t := os.Getenv("MINUTES_TIMEOUT"); len(t) > 0 {
+		minutes, _ = strconv.Atoi(t)
+	}
+
+	testTimeOut = time.Minute * time.Duration(minutes)
 }
 
-func publishMessages() {
+func runWithConsume() {
+	if err, consumed := consumeAccounts(); err == nil {
+		start := time.Now()
+		errs := multiplexErrors(
+			pubMerchants(qtdMerchants),
+			pubSellers(qtdSellers),
+		)
+
+		for err := range errs {
+			if err != nil {
+				fmt.Println("pub err")
+				panic(err)
+			}
+		}
+
+		totalSent := qtdSellers + qtdMerchants
+		success := false
+		timeLimit := time.Now().Add(testTimeOut)
+
+		fmt.Println("waiting for accounts consume")
+
+		for time.Now().Before(timeLimit) {
+			if *consumed == totalSent {
+				success = true
+				break
+			}
+		}
+
+		if success {
+			fmt.Println(fmt.Sprintf("SUCCESS: STRESS TESTS COMPLETED IN %s", time.Since(start)))
+			fmt.Println(fmt.Sprintf("ALL %d MESSAGES PROCESSED", totalSent))
+		} else {
+			fmt.Println("TEST FAILED")
+			fmt.Println(fmt.Sprintf("PROCESSED %d OF %d MESSAGES", *consumed, totalSent))
+		}
+	} else {
+		fmt.Println("error on consume q-accounts", err)
+	}
+
+	os.Exit(0)
+}
+
+func runWithoutConsume() {
 	errs := multiplexErrors(
 		pubMerchants(qtdMerchants),
 		pubSellers(qtdSellers),
@@ -48,7 +94,8 @@ func publishMessages() {
 
 	for err := range errs {
 		if err != nil {
-			fmt.Println("pub err", err)
+			fmt.Println("pub err")
+			panic(err)
 		}
 	}
 
@@ -58,21 +105,19 @@ func publishMessages() {
 // AMQP
 type connection struct {
 	conn    *amqp.Connection
-	ch      *amqp.Channel
 	connect sync.Once
 	isAlive bool
 }
 
 var singletonConn connection
 
-func getChannel() *amqp.Channel {
+func newChannel() (*amqp.Channel, error) {
 	var (
 		err error
+		ch  *amqp.Channel
 	)
 
-	if singletonConn.conn == nil || singletonConn.conn.IsClosed() {
-		singletonConn.ch = nil
-
+	singletonConn.connect.Do(func() {
 		var url string
 		if strings.ToUpper(os.Getenv("GO_ENV")) == "DOCKER" {
 			url = "amqp://guest:guest@js-rabbit-mq:5672"
@@ -81,31 +126,17 @@ func getChannel() *amqp.Channel {
 		}
 
 		singletonConn.conn, err = amqp.Dial(url)
-	}
+	})
 
-	if err != nil {
-		fmt.Println("error on connect into rabbit mq")
-		panic(err)
-	}
-
-	if singletonConn.ch == nil {
-		if singletonConn.ch, err = singletonConn.conn.Channel(); err == nil {
-			chErrs := singletonConn.ch.NotifyClose(make(chan *amqp.Error))
-
-			go func() {
-				for chErr := range chErrs {
-					fmt.Println("channel closed", chErr)
-
-					singletonConn.ch = nil
-				}
-			}()
+	if err == nil {
+		if singletonConn.conn == nil || singletonConn.conn.IsClosed() {
+			panic("rabbit connection is closed")
 		} else {
-			fmt.Println("error on create a channel")
-			panic(err)
+			ch, err = singletonConn.conn.Channel()
 		}
 	}
 
-	return singletonConn.ch
+	return ch, err
 }
 
 func publishMsg(data []byte, topic string) error {
@@ -115,34 +146,30 @@ func publishMsg(data []byte, topic string) error {
 		err error
 	)
 
-	ch = getChannel()
+	if ch, err = newChannel(); err == nil {
+		defer ch.Close()
 
-	for ch == nil {
-		fmt.Println("channel null, trying to get other")
-
-		ch = getChannel()
-	}
-
-	qP, err = ch.QueueDeclare(
-		topic,
-		false,
-		false,
-		false,
-		false,
-		nil,
-	)
-
-	if err == nil {
-		err = ch.Publish(
-			"",
-			qP.Name,
+		qP, err = ch.QueueDeclare(
+			topic,
 			false,
 			false,
-			amqp.Publishing{
-				ContentType: "application/json",
-				Body:        data,
-			},
+			false,
+			false,
+			nil,
 		)
+
+		if err == nil {
+			err = ch.Publish(
+				"",
+				qP.Name,
+				false,
+				false,
+				amqp.Publishing{
+					ContentType: "application/json",
+					Body:        data,
+				},
+			)
+		}
 	}
 
 	return err
@@ -159,17 +186,15 @@ func pubMerchants(qtd int) <-chan error {
 			if data, err := ioutil.ReadAll(json); err == nil {
 				for i := 1; i <= qtd; i++ {
 					fmt.Println(fmt.Sprintf("publishing merchant %d of %d", i, qtd))
-					err := publishMsg(data, "q-merchants")
-					for err != nil {
-						errs <- errors.New("q-merchants err: " + err.Error())
-
-						err = publishMsg(data, "q-merchants")
+					if err := publishMsg(data, "q-merchants"); err != nil {
+						err = errors.New("q-merchants err: " + err.Error())
+						errs <- err
 					}
 				}
 			}
-		} else {
-			errs <- err
 		}
+
+		errs <- err
 
 		close(errs)
 	}()
@@ -190,22 +215,64 @@ func pubSellers(qtd int) <-chan error {
 			if data, err := ioutil.ReadAll(json); err == nil {
 				for i := 1; i <= qtd; i++ {
 					fmt.Println(fmt.Sprintf("publishing seller %d of %d", i, qtd))
-					err := publishMsg(data, "q-sellers")
-					for err != nil {
-						errs <- errors.New("q-sellers err: " + err.Error())
-
-						err = publishMsg(data, "q-sellers")
+					if err := publishMsg(data, "q-sellers"); err != nil {
+						err = errors.New("q-sellers err: " + err.Error())
+						errs <- err
 					}
 				}
 			}
-		} else {
-			errs <- err
 		}
+
+		errs <- err
 
 		close(errs)
 	}()
 
 	return errs
+}
+
+func consumeAccounts() (error, *int) {
+	var (
+		ch        *amqp.Channel
+		processed int
+		err       error
+	)
+
+	if ch, err = newChannel(); err == nil {
+		var q amqp.Queue
+		q, err = ch.QueueDeclare(
+			"q-accounts",
+			false,
+			false,
+			false,
+			false,
+			nil,
+		)
+
+		if err == nil {
+			var msgs <-chan amqp.Delivery
+			msgs, err = ch.Consume(
+				q.Name,
+				"c-stress",
+				true,
+				false,
+				false,
+				false,
+				nil,
+			)
+
+			if err == nil {
+				go func() {
+					for _ = range msgs {
+						processed++
+						fmt.Println(fmt.Sprintf("processed %d messages", processed))
+					}
+				}()
+			}
+		}
+	}
+
+	return err, &processed
 }
 
 // Channel multiplexer
