@@ -17,6 +17,6 @@ RUN go build -o main .
 # Install bash to wait-for-it script
 RUN apk update && apk add bash
 
-# Move app startup script to its properly folder
+# Copy wait-for-it script to scripts folder
 RUN mkdir /scripts
-RUN mv ./wait-for-it.sh /scripts
+COPY ["./wait-for-it.sh", "/scripts"]

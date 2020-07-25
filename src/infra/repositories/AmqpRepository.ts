@@ -3,7 +3,7 @@ import AmqpSubscriber from "../data/amqp/AmqpSubscriber"
 export interface Subscription {
     getTopic(): string
     getConsumer(): string
-    getHandler(): (data: any) => any
+    getHandler(): (data: any) => void
 }
 
 export async function subscribeConsumers(subs: Subscription[]) {

@@ -40,7 +40,7 @@ export default class AmqConnection extends Loggable{
     }
 
     //TODO: make a class to handle channel
-    public async getChannel(): amqplib.Channel {
+    public async getChannel(): Promise<amqplib.Channel> {
         try {
             return await this.amqConn.createChannel()
         } catch(err) {

@@ -17,19 +17,7 @@ class AmqpPublisher extends Loggable {
 
     private amqpConn: AmqConnection
     private amqpChannel: amqplib.Channel
-    /*
-        TODO: amqp conn error with 10k msgs:
-        2020-07-23 04:44:23.048Z - AmqConnection - error on try to connect into amqp server { Error: read ECONNRESET
-            at TCP.onStreamRead (internal/stream_base_commons.js:111:27)
-        cause:
-        { Error: read ECONNRESET
-            at TCP.onStreamRead (internal/stream_base_commons.js:111:27) errno: 'ECONNRESET', code: 'ECONNRESET', syscall: 'read' },
-        isOperational: true,
-        errno: 'ECONNRESET',
-        code: 'ECONNRESET',
-        syscall: 'read' }
 
-    */
     private async connect() {
         if(!this.amqpConn || !this.amqpConn.isConnected()) {
             this.amqpChannel = null

@@ -25,8 +25,8 @@ export class SellerSub extends Loggable implements Subscription {
         return this.consumer
     }
 
-    getHandler(): (data: any) => any {
-        return async (msg) => {
+    getHandler(): (data: any) => void {
+        return async msg => {
             try {
                 const jsonData = JSON.parse(msg.content)
 

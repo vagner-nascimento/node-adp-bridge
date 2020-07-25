@@ -25,8 +25,9 @@ export class MerchantSub extends Loggable implements Subscription {
         return this.consumer
     }
 
-    getHandler(): (data: any) => any {
-        return async (msg) => {
+    // TODO: It receives ALL messages BEFORE to process it
+    getHandler(): (data: any) => void {
+        return async msg => {
             try {
                 const jsonData = JSON.parse(msg.content)
 

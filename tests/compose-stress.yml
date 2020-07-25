@@ -10,8 +10,8 @@ services:
       - js-rabbit-mq
     environment:
       - GO_ENV=DOCKER
-      - QTD_SELL=5000
-      - QTD_MERCH=5000
+      - QTD_SELL=20000
+      - QTD_MERCH=20000
       - MINUTES_TIMEOUT=30
     networks:
       - js-network
