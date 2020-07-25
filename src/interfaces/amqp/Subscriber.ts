@@ -16,7 +16,7 @@ const getSubscriptions = (): Subscription[] => {
 import { config } from "../../config"
 import logger from "../../infra/logger";
 
-export default async function() {
+export default async () => {
     AppEventEmiter.addListener(AmqpEvents.AMQP_SUB_RECONNECTED, async () => { 
         await subscribeConsumers(getSubscriptions())
     })

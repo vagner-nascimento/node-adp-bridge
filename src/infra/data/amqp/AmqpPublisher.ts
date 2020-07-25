@@ -2,14 +2,16 @@ import amqplib from 'amqplib'
 
 import AmqConnection from './AmqpConnection'
 
-import logger from "../../logger"
-
 import ApplicationError from '../../../error/ApplicationError';
+
+import Loggable from '../../logger/Loggable';
 
 const { config } = require("../../../config")
 
-class AmqpPublisher {
+class AmqpPublisher extends Loggable {
     constructor() {
+        super(AmqpPublisher.name)
+
         this.amqpConn = new AmqConnection(config.data.amqp.connStr)
     }
 
@@ -34,14 +36,6 @@ class AmqpPublisher {
 
             await this.amqpConn.connect()
         }
-    }
-
-    private logInfo(msg: string, data: any = null) {
-        logger.info(`${this.constructor.name} - ${msg}`, data)
-    }
-    
-    private logError(msg: string, err: Error = null) {
-        logger.error(`${this.constructor.name} - ${msg}`, err)
     }
 
     public async publishMessage(queue: string, data: any) {

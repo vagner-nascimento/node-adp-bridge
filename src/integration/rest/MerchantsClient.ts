@@ -1,7 +1,5 @@
 import httpStatus from "http-status"
 
-import logger from "../../infra/logger"
-
 import HttpClient from "../../infra/data/http/HttpClient"
 
 import { isRequestFailed } from "./response/HttpResponse"
@@ -9,6 +7,7 @@ import { isRequestFailed } from "./response/HttpResponse"
 import Merchant from "../../app/entities/Merchant"
 
 import { config } from "../../config"
+import ApplicationError from '../../error/ApplicationError';
 
 class MerchantsClient extends HttpClient {
     constructor() {
@@ -17,7 +16,7 @@ class MerchantsClient extends HttpClient {
             timeout
         } = config.integration.rest.merchants
 
-        super({ baseUrl, timeout })
+        super({ baseUrl, timeout }, MerchantsClient.name)
     }
     
     async getMerchant(merchant_id: string): Promise<Merchant> {
@@ -28,13 +27,13 @@ class MerchantsClient extends HttpClient {
             }
         }
 
-        const defaultError =  new Error(`${this.getCallName(this.getMerchant)} - an erro occured on try to get the merchant`)
+        const errMsg = "an erro occured on try to get the merchant"
 
         try {
             const res = await super.get(request)
 
             if(res.status === httpStatus.NO_CONTENT) {
-                logger.info(`${this.getCallName(this.getMerchant)} - returned ${res.status} without data`)
+                this.logInfo(`get merchant returned ${res.status} without data`)
 
                 return null
             }
@@ -42,19 +41,17 @@ class MerchantsClient extends HttpClient {
             if(isRequestFailed(res.status)) {
                 if(res.status === httpStatus.NOT_FOUND) return null
 
-                throw defaultError
+                this.logError(errMsg, res.error)
+
+                throw new ApplicationError(errMsg)
             }
 
             return new Merchant(res.data)
         } catch(err) {
-            logger.info(`${this.getCallName(this.getMerchant)} - error `, err)
+            this.logError(errMsg, err)
 
-            throw defaultError
+            throw new ApplicationError(errMsg)
         }
-    }
-
-    private getCallName(fn: any): string {
-        return `${this.constructor.name}.${fn.name}`
     }
 }
 

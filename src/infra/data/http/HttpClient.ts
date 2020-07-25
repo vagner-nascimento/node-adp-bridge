@@ -1,9 +1,12 @@
 import axios from "axios"
 import httpStatus from "http-status"
 import logger from "../../logger"
+import Loggable from '../../logger/Loggable';
 
-export default abstract class HttpClient {
-    constructor({ baseUrl, timeout = 10000 }) {
+export default abstract class HttpClient extends Loggable {
+    constructor({ baseUrl, timeout = 10000 }, className: string) {
+        super(className)
+        
         this.instance = axios.create({
             baseURL: baseUrl,
             timeout

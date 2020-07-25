@@ -1,11 +1,13 @@
 import amqplib from 'amqplib'
 
-import logger from "../../logger"
-
 import ApplicationError from '../../../error/ApplicationError'
 
-export default class AmqConnection {
+import Loggable from '../../logger/Loggable';
+
+export default class AmqConnection extends Loggable{
     constructor(connStr: string) {
+        super(AmqConnection.name)
+
         this.connStr = connStr
     }
 
@@ -29,9 +31,9 @@ export default class AmqConnection {
 
             this.setEventsHandler()
         } catch(err) {
-            const msg = `${this.constructor.name} - error on try to connect into amqp server`
+            const msg = `error on try to connect into amqp server`
 
-            logger.error(msg, err)
+            this.logError(msg, err)
 
             throw new ApplicationError(msg)
         }
@@ -43,8 +45,8 @@ export default class AmqConnection {
             return await this.amqConn.createChannel()
         } catch(err) {
             const msg = "error on try to get an amqp channel"
-    
-            logger.error(msg, err)
+
+            this.logError(msg, err)
     
             throw new ApplicationError(msg)
         }

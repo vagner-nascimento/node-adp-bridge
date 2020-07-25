@@ -1,7 +1,5 @@
 import httpStatus from "http-status"
 
-import logger from "../../infra/logger"
-
 import HttpClient from "../../infra/data/http/HttpClient"
 
 import { isRequestFailed } from "./response/HttpResponse"
@@ -9,6 +7,7 @@ import { isRequestFailed } from "./response/HttpResponse"
 import MerchantAccount from "../../app/entities/MerchantAccount"
 
 import { config } from "../../config"
+import ApplicationError from '../../error/ApplicationError';
 
 class MerchantAccountsClient extends HttpClient {
     constructor() {
@@ -17,7 +16,7 @@ class MerchantAccountsClient extends HttpClient {
             timeout
         } = config.integration.rest.merchantsAccounts
 
-        super({ baseUrl, timeout })
+        super({ baseUrl, timeout }, MerchantAccountsClient.name)
     }
 
     async getByMerchant(merchant_id: string): Promise<MerchantAccount[]> {
@@ -28,12 +27,12 @@ class MerchantAccountsClient extends HttpClient {
             }
         }
 
-        const defaultError =  new Error(`${this.getCallName(this.getByMerchant)} - an erro occured on try to get the merchant accounts`)
+        const errMsg = `${this.getByMerchant.name} - an erro occured on try to get the merchant accounts`
 
         try {
             const res = await super.get(req)
             if(res.status === httpStatus.NO_CONTENT) {
-                logger.info(`${this.getCallName(this.getByMerchant)} - returned ${res.status} without data`)
+                this.logInfo(`${this.getByMerchant.name} - get merchant accounts returned ${res.status} without data`)
 
                 return []
             }
@@ -41,14 +40,16 @@ class MerchantAccountsClient extends HttpClient {
             if(isRequestFailed(res.status)) {
                 if(res.status === httpStatus.NOT_FOUND) return []
 
-                throw defaultError
+                throw new ApplicationError(errMsg)
             }
 
-            if(!Array.isArray(res.data)) throw new Error(`${this.getCallName(this.getByMerchant)} - unexpedted non array response`)
+            if(!Array.isArray(res.data)) throw new ApplicationError(`${this.getByMerchant.name} - unexpedted non array response`)
 
             return res.data.map(d => new MerchantAccount(d))
         } catch(err) {
-            throw defaultError
+            this.logError(errMsg, err)
+
+            throw new ApplicationError(errMsg)
         }
     }
 
@@ -60,12 +61,12 @@ class MerchantAccountsClient extends HttpClient {
             }
         }
 
-        const defaultError =  new Error(`${this.getCallName(this.getAccount)} - an error occurred on try to get the merchant accounts`)
+        const errMsg = `${this.getAccount.name} - an error occurred on try to get the merchant account`
 
         try {
             const res = await super.get(req)
             if(res.status === httpStatus.NO_CONTENT) {
-                logger.info(`${this.getCallName(this.getAccount)} - returned ${res.status} without data`)
+                this.logInfo(`${this.getAccount.name} - returned ${res.status} without data`)
 
                 return null
             }
@@ -73,17 +74,17 @@ class MerchantAccountsClient extends HttpClient {
             if(isRequestFailed(res.status)) {
                 if(res.status === httpStatus.NOT_FOUND) return null
 
-                throw defaultError
+                this.logError(errMsg, res.error)
+
+                throw new ApplicationError(errMsg)
             }
 
             return new MerchantAccount(res.data)
         } catch(err) {
-            throw defaultError
-        }
-    }
+            this.logError(errMsg, err)
 
-    private getCallName(fn: any): string {
-        return `${this.constructor.name}.${fn.name}`
+            throw new ApplicationError(errMsg)
+        }
     }
 }
 

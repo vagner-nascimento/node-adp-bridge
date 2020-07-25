@@ -1,7 +1,5 @@
 import httpStatus from "http-status"
 
-import logger from "../../infra/logger"
-
 import HttpClient from "../../infra/data/http/HttpClient"
 
 import { isRequestFailed } from "./response/HttpResponse"
@@ -10,6 +8,8 @@ import Affiliation from "../../app/entities/Affiliation"
 
 import { config } from "../../config"
 
+import ApplicationError from '../../error/ApplicationError';
+
 class AffiliationsClient extends HttpClient {
     constructor() {
         const {
@@ -17,7 +17,7 @@ class AffiliationsClient extends HttpClient {
             timeout
         } = config.integration.rest.affiliations
 
-        super({ baseUrl, timeout })
+        super({ baseUrl, timeout }, AffiliationsClient.name)
     }
 
     async getByMerchant(merchant_id: string): Promise<Affiliation> {
@@ -28,12 +28,12 @@ class AffiliationsClient extends HttpClient {
             }
         }
 
-        const defaultError =  new Error(`${this.getCallName(this.getByMerchant)} - an error occurred on try to get the affiliation`)
+        const errMsg = "an error occurred on try to get the affiliation"
 
         try {
             const res = await super.get(req)
             if(res.status === httpStatus.NO_CONTENT) {
-                logger.info(`${this.getCallName(this.getByMerchant)} - returned ${res.status} without data`)
+                this.logInfo(`get affiliation returned ${res.status} without data`)
 
                 return null
             }
@@ -41,7 +41,9 @@ class AffiliationsClient extends HttpClient {
             if(isRequestFailed(res.status)) {
                 if(res.status === httpStatus.NOT_FOUND) return null
 
-                throw defaultError
+                this.logError(errMsg, res.error)
+
+                throw new ApplicationError(errMsg)
             }
             
             const affData = res.data[0]
@@ -50,12 +52,10 @@ class AffiliationsClient extends HttpClient {
 
             return new Affiliation(res.data[0])
         } catch(err) {
-            throw defaultError
-        }
-    }
+            this.logError(errMsg, err)
 
-    private getCallName(fn: any): string {
-        return `${this.constructor.name}.${fn.name}`
+            throw new ApplicationError(errMsg)
+        }
     }
 }
 

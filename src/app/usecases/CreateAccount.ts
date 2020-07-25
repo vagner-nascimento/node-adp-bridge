@@ -11,7 +11,7 @@ const isValidId = id => isString(id) && id.length > 0
 
 const isMerchant = data => !("merchant_id" in data)
 
-export default function (data: any): Account {
+export default (data: any): Account => {
     if(isValidData(data)) {
         if(isMerchant(data)) {
             const merchant = new Merchant(data)

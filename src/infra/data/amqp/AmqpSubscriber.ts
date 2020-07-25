@@ -4,18 +4,20 @@ import { AmqpEvents } from '../../repositories/amqp/AmqpEventsEnum';
 
 import AppEventsEmiter from "../../../events/AppEventEmiter"
 
-import logger from "../../logger"
-
 import Retry from '../connection/Retry';
 
 import sleep from "../../../tools/Sleep"
 
 import AmqConnection from './AmqpConnection'
 
+import Loggable from '../../logger/Loggable';
+
 const { config } = require("../../../config")
 
-class AmqpSubscriber {
+class AmqpSubscriber extends Loggable {
     constructor() {
+        super(AmqpSubscriber.name)
+
         this.amqpConn = new AmqConnection(config.data.amqp.connStr)
         
         const {
@@ -32,14 +34,6 @@ class AmqpSubscriber {
     private amqpChannel: amqplib.Channel
     private retry: Retry
     private onceConnected: boolean
-
-    private logInfo(msg: string, data: any = null) {
-        logger.info(`${this.constructor.name} - ${msg}`, data || "")
-    }
-    
-    private logError(msg: string, err: Error = null) {
-        logger.info(`${this.constructor.name} - ${msg}`, err || "")
-    }
 
     private setDisconnectEvents() {
         const handler = async (err: Error) => await this.reConnect(err)

@@ -4,10 +4,12 @@ import addAccount from "./AddAccount"
 
 import { Subscription } from "../../../infra/repositories/AmqpRepository"
 
-import logger from "../../../infra/logger"
+import Loggable from '../../../infra/logger/Loggable';
 
-export class MerchantSub implements Subscription {
+export class MerchantSub extends Loggable implements Subscription {
     constructor() {
+        super(MerchantSub.name)
+
         this.topic = config.integration.amqp.sub.merchant.topic
         this.consumer = config.integration.amqp.sub.merchant.consumer
     }
@@ -28,13 +30,13 @@ export class MerchantSub implements Subscription {
             try {
                 const jsonData = JSON.parse(msg.content)
 
-                logger.info(`${this.constructor.name} - message data received `, jsonData)
+                this.logInfo("message data received", jsonData)
 
                 const acc = await addAccount(jsonData)
                 
-                logger.info(`${this.constructor.name} - account added`, acc)
+                this.logInfo("account added", acc)
             } catch(err) {
-                logger.error(`${this.constructor.name} - error on try to add account`, err)
+                this.logError("error on try to add account", err)
             }
         }
     }
