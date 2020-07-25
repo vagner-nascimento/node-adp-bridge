@@ -13,10 +13,14 @@ class AmqpPublisher extends Loggable {
         super(AmqpPublisher.name)
 
         this.amqpConn = new AmqConnection(config.data.amqp.connStr)
+        this.queueInfo = { durable: false, exclusive: false, autoDelete: false }
+        this.msgInfo = { madatory: false, immediate: false }
     }
 
     private amqpConn: AmqConnection
     private amqpChannel: amqplib.Channel
+    private queueInfo: any
+    private msgInfo: any
 
     private async connect() {
         if(!this.amqpConn || !this.amqpConn.isConnected()) {
@@ -34,8 +38,8 @@ class AmqpPublisher extends Loggable {
             
             this.logInfo(`data to send to topic ${queue}:`, data)
 
-            await this.amqpChannel.assertQueue(queue, { durable: false })
-            await this.amqpChannel.sendToQueue(queue, Buffer.from(data))
+            await this.amqpChannel.assertQueue(queue, this.queueInfo)
+            await this.amqpChannel.sendToQueue(queue, Buffer.from(data), this.msgInfo)
         } catch(err) {
             const msg = `error on try to publish data into ${queue}`
 

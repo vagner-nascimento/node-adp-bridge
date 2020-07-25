@@ -26,14 +26,17 @@ class AmqpSubscriber extends Loggable {
         } = config.data.amqp.connRetry
 
         this.retry = new Retry(msToSleep, maxTries)
-        
+        this.queueInfo = { durable: false, autoDelete: false, exclusive: false }
+        this.msgInfo = { noAck: true, exclusive: false, noLocal: false }
     }
 
     private amqpConn: AmqConnection
     private isConnAlive: boolean
+    private onceConnected: boolean
     private amqpChannel: amqplib.Channel
     private retry: Retry
-    private onceConnected: boolean
+    private queueInfo: any // TODO: create a type queue and msg info
+    private msgInfo: any
 
     private setDisconnectEvents() {
         const handler = async (err: Error) => await this.reConnect(err)
@@ -109,8 +112,11 @@ class AmqpSubscriber extends Loggable {
             if(this.amqpConn.isConnected()) {
                 if(!this.amqpChannel) this.amqpChannel = await this.amqpConn.getChannel()
 
-                await this.amqpChannel.assertQueue(queue, { durable: false })
-                await this.amqpChannel.consume(queue, msgHandler, { noAck: true, consumerTag: consumer })
+                let consumerMsgInfo = Object.assign({}, this.msgInfo)
+                consumerMsgInfo = Object.assign(consumerMsgInfo, { consumerTag: consumer })
+
+                await this.amqpChannel.assertQueue(queue, this.queueInfo)                
+                await this.amqpChannel.consume(queue, msgHandler, consumerMsgInfo)
 
                 this.logInfo(`consumer ${consumer} subscribed into topic ${queue}`)
 
