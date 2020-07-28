@@ -1,4 +1,4 @@
-import loadApp from "./loader/Loader"
+import loadApp from "./loader"
 
 loadApp()
   .then(() => console.log("application loaded"))

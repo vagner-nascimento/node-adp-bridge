@@ -7,5 +7,5 @@ const isString = val =>  !isNullOrUndefined(val) && typeof val === "string"
 export {
     isObject,
     isString,
-    isNullOrUndefined,
+    isNullOrUndefined
 }
