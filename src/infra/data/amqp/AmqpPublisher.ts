@@ -9,6 +9,7 @@ import ApplicationError from '../../../error/ApplicationError'
 let singPubConn: any
 
 // TODO: make comfirm, ak an nak
+// TODO: realise why creates a lot of connections when run 50k msg on stress test
 export default class AmqpPublisher extends LoggerHandler {
     constructor(topic: string) {
         super(AmqpPublisher.name)
