@@ -4,7 +4,7 @@ import Subsciber from '../../integration/amqp/Subscriber'
 
 import MerchantSubscriber from './MerchantSubscriber'
 
-import SellerSubscriber from './SellerCubscriber'
+import SellerSubscriber from './SellerSubscriber'
 
 const getSubs = (): Subsciber[] =>  {
     return [
