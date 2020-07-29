@@ -4,7 +4,7 @@ import logger from "../../infra/logger"
 
 import newExpress from "express"
 
-import healthRoutes from "./HealthRoutes"
+import healthRoutes from "./routes/HealthRoutes"
 
 export default (): Promise<any> => {
     const port = config.presentation.rest.port
