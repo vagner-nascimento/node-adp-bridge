@@ -1,6 +1,6 @@
 import events from "events"
 
-import { AmqpEvents } from '../infra/repositories/amqp/AmqpEventsEnum'
+import { AmqpEvents } from './amqp/AmqpEventsEnum'
 
 class AppEventEmiter {
     constructor(){

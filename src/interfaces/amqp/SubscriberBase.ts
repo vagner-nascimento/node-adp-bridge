@@ -1,8 +1,9 @@
-import LoggerHandler from '../../infra/logger/LoggerHandler';
-import Subsciber from '../../integration/amqp/Subscriber';
+import LoggerHandler from '../../infra/logger/LoggerHandler'
+
+import Subsciber from '../../integration/amqp/Subscriber'
 
 export default abstract class SubscriberBase extends LoggerHandler implements Subsciber {
-    constructor({ topic, consumer }, baseClassName: string, handler: (msg: any) => boolean) {
+    constructor({ topic, consumer }, baseClassName: string, handler: (msg: any) => Promise<boolean>) {
         super(baseClassName)
 
         this.topic = topic
@@ -12,7 +13,7 @@ export default abstract class SubscriberBase extends LoggerHandler implements Su
 
     private topic: string
     private consumer: string
-    private handler: (msg: any) => boolean
+    private handler: (msg: any) => Promise<boolean>
 
     getTopic(): string {
         return this.topic
@@ -22,7 +23,7 @@ export default abstract class SubscriberBase extends LoggerHandler implements Su
         return this.consumer
     }
 
-    getHandler(): (msg: any) => boolean {
+    getHandler(): (msg: any) => Promise<boolean> {
         return this.handler
     }
 }

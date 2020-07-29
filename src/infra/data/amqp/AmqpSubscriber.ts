@@ -4,7 +4,7 @@ import { config } from "../../../config"
 
 import AppEventEmiter from "../../../events/AppEventEmiter"
 
-import { AmqpEvents } from '../../repositories/amqp/AmqpEventsEnum'
+import { AmqpEvents } from '../../../events/amqp/AmqpEventsEnum'
 
 import ApplicationError from '../../../error/ApplicationError'
 
@@ -48,10 +48,6 @@ import sleep from '../../../tools/Sleep'
        return AmqpSubscriber.instance
     }
 
-     private isConnected(): boolean {
-        return this.isOnline
-    }
-
     public listenReconnectEvent(handler: () => any) {
         AppEventEmiter.addListener(AmqpEvents.AMQP_SUB_RECONNECTED, handler)
     }
@@ -82,6 +78,11 @@ import sleep from '../../../tools/Sleep'
         }
     }
 
+    private isConnected(): boolean {
+        return this.isOnline
+    }
+
+
     private async startConnection() {
         try {
             await this.connect()
@@ -94,7 +95,7 @@ import sleep from '../../../tools/Sleep'
 
             if(this.isConnected) AppEventEmiter.emit(AmqpEvents.AMQP_SUB_CONNECTED)
         }
-     }
+    }
 
      private async connect() {
         try {
@@ -155,7 +156,7 @@ import sleep from '../../../tools/Sleep'
         }
      }
 
-     private async setChannel(): Promise<amqplib.Channel> {
+     private async setChannel() {
          if(this.isConnected()) {
             if(!this.chann) {
                 try {
@@ -178,11 +179,9 @@ import sleep from '../../../tools/Sleep'
                     throw err
                 }
             }
-
-            return this.chann
+         } else {
+            throw new ApplicationError("cannot create an AMQP channel because connection is closed")
          }
-
-         throw new ApplicationError("cannot create an AMQP channel because connection is closed")
      }
  }
  
