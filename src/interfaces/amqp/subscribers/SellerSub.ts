@@ -4,6 +4,10 @@ import logger from '../../../infra/logging/Logger';
 
 import config from '../../../../config';
 
+import { getAccountAdapter } from '../../../provider'
+;
+import AccountAdpHandler from '../../../app/handlers/AccountAdpHandler';
+
 class SellerSub implements Subscriber {
     constructor() {
         const {
@@ -59,9 +63,16 @@ class SellerSub implements Subscriber {
             else logger.info(msg, data)
         }
 
+        const accAdp: AccountAdpHandler = getAccountAdapter()
+
         try {
-            logMsg('message data', JSON.parse(msg.content))
-            // TODO: call addAccount adapter
+            const data = JSON.parse(msg.content)
+
+            logMsg('message data', data)
+
+            const acc = await accAdp.addAccount(data)
+            
+            logMsg('account added', acc)
         } catch(err) {
             logMsg('error', err);
         }

@@ -4,36 +4,28 @@ import Loggable from '../../logging/Loggable';
 
 import ApplicationError from '../../../error/ApplicationError';
 
-export default class AmqpSubConnection extends Loggable {
+export default class AmqpPubConnection extends Loggable {
     private constructor() {
-        super(AmqpSubConnection.name);
+        super(AmqpPubConnection.name);
 
         this.conns = new Map();
-        this.channels = new Map();
     }
 
-    // TODO: unify amqp conn and channel
     private conns: Map<string, any>;
-    private channels: Map<string, amqplib.Channel>;
-    private static instance: AmqpSubConnection;
+    private static instance: AmqpPubConnection; 
 
-    public static async getChannel(connStr: string): Promise<amqplib.Channel> {
-        if(!AmqpSubConnection.instance) {
-            AmqpSubConnection.instance = new AmqpSubConnection();
+    public static async getNewChannel(connStr: string): Promise<amqplib.Channel> {
+        if(!AmqpPubConnection.instance) {
+            AmqpPubConnection.instance = new AmqpPubConnection();
         }
         
-        let conn = AmqpSubConnection.instance.conns.get(connStr);
-        if(conn) {
-            return AmqpSubConnection.instance.channels.get(connStr);
+        let conn = AmqpPubConnection.instance.conns.get(connStr);
+        if(!conn) {
+            conn = await AmqpPubConnection.instance.connect(connStr);
+            AmqpPubConnection.instance.conns.set(connStr, conn);
         }
 
-        conn = await AmqpSubConnection.instance.connect(connStr);
-        AmqpSubConnection.instance.conns.set(connStr, conn);
-
-        const ch = await AmqpSubConnection.instance.createChannel(conn);
-        AmqpSubConnection.instance.channels.set(connStr, ch);
-
-        return ch;
+        return await AmqpPubConnection.instance.createChannel(conn);
     }
 
     private async connect(connStr: string): Promise<any> {
