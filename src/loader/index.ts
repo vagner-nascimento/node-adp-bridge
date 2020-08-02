@@ -10,7 +10,6 @@ import { subscribeConsumers } from '../interfaces/amqp'
 export default async (): Promise<void> => {
     logger.info('**CONFIGS**', conf);
     
-    // TODO: load amqp interface
     await subscribeConsumers();
     await startHttpServer();
 }

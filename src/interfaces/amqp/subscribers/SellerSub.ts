@@ -4,6 +4,8 @@ import Loggable from '../../../infra/logging/Loggable';
 
 import config from '../../../../config';
 
+import logger from '../../../infra/logging/Logger';
+
 class SellerSub extends Loggable implements Subscriber {
     constructor() {
         super(SellerSub.name)
@@ -54,21 +56,20 @@ class SellerSub extends Loggable implements Subscriber {
         return this.autoComplete;
     }
 
-    public async processMessage(msg: any): Promise<void> {
+    public async handleMessage(msg: any): Promise<void> {
+        const logMsg = (msg: string, data: any) => {
+            msg = `${SellerSub.name} - ${msg}`
+            if(data instanceof Error) logger.error(msg, data)
+            else logger.info(msg, data)
+        }
+
         try {
-            this.logInfo('message data', msg.body)
+            logMsg('message data', JSON.parse(msg.content))
             // TODO: call addAccount adapter
-            await msg.complete()
-
-            this.logInfo('message completed')
         } catch(err) {
-            this.logError('error', err)
-
-            await msg.deadLetter({ deadletterReason: 'error', deadLetterErrorDescription: err.message })
-
-            this.logInfo('message sent to dead letter')
+            logMsg('error', err);
         }
     }
 }
 
-export default new SellerSub()
+export default new SellerSub();

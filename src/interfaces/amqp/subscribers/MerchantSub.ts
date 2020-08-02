@@ -1,13 +1,11 @@
 import Subscriber from './Subscriber';
 
-import Loggable from '../../../infra/logging/Loggable';
+import logger from '../../../infra/logging/Logger';
 
 import config from '../../../../config';
 
-class MerchantSub extends Loggable implements Subscriber {  
+class MerchantSub implements Subscriber {  
     constructor() {
-        super(MerchantSub.name);
-
         const {
             integration: {
                 amqp: {
@@ -54,19 +52,18 @@ class MerchantSub extends Loggable implements Subscriber {
         return this.autoComplete;
     }
 
-    public async processMessage(msg: any): Promise<void> {
+    public async handleMessage(msg: any): Promise<void> {
+        const logMsg = (msg: string, data: any) => {
+            msg = `${MerchantSub.name} - ${msg}`
+            if(data instanceof Error) logger.error(msg, data)
+            else logger.info(msg, data)
+        }
+
         try {
-            this.logInfo('message data', msg.body);
+            logMsg('message data', JSON.parse(msg.content))
             // TODO: call addAccount adapter
-            await msg.complete();
-
-            this.logInfo('message completed');
         } catch(err) {
-            this.logError('error', err);
-
-            await msg.deadLetter({ deadletterReason: 'error', deadLetterErrorDescription: err.message });
-
-            this.logInfo('message sent to dead letter');
+            logMsg('error', err);
         }
     }
 }
