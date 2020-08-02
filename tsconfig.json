@@ -1,16 +1,27 @@
 {
-    "compilerOptions": {
-      "module": "commonjs",
-      "esModuleInterop": true,
-      "target": "es6",
-      "moduleResolution": "node",
-      "sourceMap": true,
-      "outDir": "dist",
-      "resolveJsonModule": true
-    },
-    "include": [
-      "src/*",
-      "src/config/*.json"
-    ],
-    "lib": ["es2017"]
+  "include": [
+    "index.ts",
+    "src",
+    "src/*.js",
+    "src/**/*.js",
+    "config",
+    "config/*.json",
+    "scripts/**/*.json",
+  ],
+  "exclude": [
+    "dist",
+    "node_modules",
+    "tests",
+    "test*"
+  ],
+  "compilerOptions": {
+    "sourceMap": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "module": "commonjs",
+    "target": "ES2018",
+    "moduleResolution": "node",
+    "outDir": "dist"
+  },
+  "lib": ["ES2018"]
 }

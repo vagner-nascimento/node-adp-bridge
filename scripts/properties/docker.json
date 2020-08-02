@@ -1,0 +1,50 @@
+{
+    "data": {
+        "amqp": {
+            "connStr": "amqp://guest:guest@js-rabbit-mq:5672",
+            "connRetry": {
+                "sleep": 4000,
+                "maxTries": 10
+            },
+            "exitOnLostConnection": true
+        }
+    },
+    "presentation": {
+        "rest": {
+            "port": 3000
+        }
+    },
+    "integration": {
+        "rest": {
+            "merchants": {
+                "baseUrl": "http://js-rest-mock:4000/merchants",
+                "timeout": 10000
+            },
+            "merchantsAccounts": {
+                "baseUrl": "http://js-rest-mock:4000/merchant-accounts",
+                "timeout": 10000
+            },
+            "affiliations": {
+                "baseUrl": "http://js-rest-mock:4000/affiliations",
+                "timeout": 10000
+            }
+        },
+        "amqp": {
+            "sub": {
+                "merchant": {
+                    "topic": "q-merchants",
+                    "consumer": "c-merchant"
+                },
+                "seller": {
+                    "topic": "q-sellers",
+                    "consumer": "c-seller"
+                }
+            },
+            "pub": {
+                "account": {
+                    "topic": "q-accounts"
+                }
+            }
+        }
+    }
+}

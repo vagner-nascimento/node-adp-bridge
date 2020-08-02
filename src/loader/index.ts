@@ -1,15 +1,11 @@
-import { loadConfig } from "../config"
-const conf = loadConfig()
+import { loadEnvironment } from '../../config/ConfigLoader'
 
-import logger from "../infra/logger"
+const conf = loadEnvironment()
 
-import startRestInterface from "../interfaces/rest"
+import logger from '../infra/logging/Logger'
 
-import { subscribeConsumers } from "../interfaces/amqp"
-
-export default async (): Promise<void> => {   
-    logger.info("**CONFIGS**", JSON.stringify(conf))
-
-    await subscribeConsumers()
-    await startRestInterface()
+export default async (): Promise<void> => {
+    logger.info('**CONFIGS**', conf);
+    
+    // TODO: load rest and amqp interfaces
 }
