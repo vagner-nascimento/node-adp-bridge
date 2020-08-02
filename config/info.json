@@ -1,4 +1,5 @@
 {
     "serviceName": "node-enriching-adp",
-    "version": "v1"
+    "version": "v1",
+    "appPort": "3000"
 }
