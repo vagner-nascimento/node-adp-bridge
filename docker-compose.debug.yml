@@ -1,0 +1,37 @@
+version: '3.7'
+
+services:
+  js-app:
+    container_name: js-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - js-rabbit-mq
+    environment:
+      - NODE_ENV=DOCKER
+      - NODE_PATH=.
+    ports:
+      - 3000:3000
+    networks:
+      - js-network
+    command: >
+      bash -c "/app/wait-for.sh -s -t 30 js-rabbit-mq:5672 -- node /app/dist/index.js"
+
+  js-rabbit-mq:
+    container_name: js-rabbit-mq
+    image: rabbitmq:3.6-management-alpine
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - rabitmq:/etc/rabbitmq/
+    networks:
+      - js-network
+
+volumes:
+  rabitmq:
+
+networks:
+  js-network:
+    driver: bridge

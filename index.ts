@@ -1,4 +1,5 @@
 // TODO: realise how to call from "NODE_PATH=.", F.I: import loadApp from 'src/loader';
+// TODO: add rest mock
 import loadApp from './src/loader';
 
 loadApp()
