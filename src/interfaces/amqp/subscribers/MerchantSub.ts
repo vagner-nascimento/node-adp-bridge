@@ -7,6 +7,7 @@ import config from '../../../../config';
 import { getAccountAdapter } from '../../../provider';
 
 import AccountAdpHandler from '../../../app/handlers/AccountAdpHandler';
+import Merchant from '../../../app/types/Merchant';
 
 class MerchantSub implements Subscriber {  
     constructor() {
@@ -68,9 +69,10 @@ class MerchantSub implements Subscriber {
         try {
             const data = JSON.parse(msg.content)
 
-            logMsg('message data', data)
+            logMsg('message data', data);
 
-            const acc = await accAdp.addAccount(data)
+            const merch = new Merchant(data);
+            const acc = await accAdp.addAccount(merch);
             
             logMsg('account added', acc)
         } catch(err) {

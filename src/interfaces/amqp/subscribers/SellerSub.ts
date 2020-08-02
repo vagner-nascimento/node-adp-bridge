@@ -8,6 +8,8 @@ import { getAccountAdapter } from '../../../provider'
 ;
 import AccountAdpHandler from '../../../app/handlers/AccountAdpHandler';
 
+import Seller from '../../../app/types/Seller';
+
 class SellerSub implements Subscriber {
     constructor() {
         const {
@@ -70,7 +72,8 @@ class SellerSub implements Subscriber {
 
             logMsg('message data', data)
 
-            const acc = await accAdp.addAccount(data)
+            const sell = new Seller(data);
+            const acc = await accAdp.addAccount(sell)
             
             logMsg('account added', acc)
         } catch(err) {
