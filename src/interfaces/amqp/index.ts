@@ -1,13 +1,14 @@
-import logger from '../../infra/logging/Logger';
-
 import config from '../../../config';
+
+import logger from '../../infra/logging/Logger';
 
 import Subscriber from './subscribers/Subscriber';
 
+import AmqpSubHandler from './AmqpSubHandler';
+
 import { getSubscribers } from './subscribers';
 
-//TODO: change to get AMQP SUB from provider through an interface
-import AmqpSubCleint from '../../integration/amqp/AmqpSubCleint';
+import { getAmqpSubHandler } from '../../provider'
 
 const {
     integration: {
@@ -27,9 +28,9 @@ const logMessage = (msg: string, err: Error = null): void => {
 }
 
 const subscribe = async (sub: Subscriber): Promise<void> => {
-    const amqpCli = new AmqpSubCleint(sub.getConnStr());
+    const subHandler: AmqpSubHandler = getAmqpSubHandler(sub.getConnStr());
 
-    await amqpCli.subscribeConsumer(
+    await subHandler.subscribeConsumer(
         sub.getTopic(),
         sub.getConsumer(),
         sub.handleMessage,
@@ -42,11 +43,11 @@ const subscribe = async (sub: Subscriber): Promise<void> => {
             }
 
             logMessage('retry police is NOT "exit": keep runnig the application');
-        })
+        });
 
     logMessage(`consumer "${sub.getConsumer()}" subsribed into "${sub.getTopic()}" topic`);
 }
 
 export async function subscribeConsumers(): Promise<void> {
-    for(const sub of getSubscribers()) await subscribe(sub)
+    for(const sub of getSubscribers()) await subscribe(sub);
 }

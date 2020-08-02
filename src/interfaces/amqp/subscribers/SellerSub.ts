@@ -1,15 +1,11 @@
 import Subscriber from './Subscriber';
 
-import Loggable from '../../../infra/logging/Loggable';
+import logger from '../../../infra/logging/Logger';
 
 import config from '../../../../config';
 
-import logger from '../../../infra/logging/Logger';
-
-class SellerSub extends Loggable implements Subscriber {
+class SellerSub implements Subscriber {
     constructor() {
-        super(SellerSub.name)
-
         const {
             integration: {
                 amqp: {

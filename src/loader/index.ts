@@ -1,11 +1,11 @@
-import { loadEnvironment } from '../../config/ConfigLoader'
-const conf = loadEnvironment()
+import { loadEnvironment } from '../../config/ConfigLoader';
+const conf = loadEnvironment();
 
-import logger from '../infra/logging/Logger'
+import logger from '../infra/logging/Logger';
 
-import { start as startHttpServer } from '../interfaces/http/Server';
+import { startHttpServer } from '../interfaces/http';
 
-import { subscribeConsumers } from '../interfaces/amqp'
+import { subscribeConsumers } from '../interfaces/amqp';
 
 export default async (): Promise<void> => {
     logger.info('**CONFIGS**', conf);

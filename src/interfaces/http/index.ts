@@ -6,7 +6,7 @@ import logger from '../../infra/logging/Logger';
 
 import router from './Router'
 
-export function start(): Promise<any> {
+export function startHttpServer(): Promise<any> {
     const express = newExpress();
     const { appPort: port } = config.info
 
