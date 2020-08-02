@@ -9,7 +9,6 @@ import { createSller } from '../entities/SellerEnt';
 import ApplicationError from '../../error/ApplicationError';
 
 export function createAccount(entity: any): Account {
-    // TODO: validate if is seller or merchant
     if(entity instanceof Merchant) {
         const merch = createMerchant(entity);
 

@@ -8,7 +8,6 @@ import AmqpPublisger from '../../data/amqp/AmqpPublisher';
 
 import config from '../../../../config';
 
-// TODO: implements publish
 export default class AccountRepository extends Loggable implements AccountDataHandler {
     constructor() {
         super(AccountRepository.name)
