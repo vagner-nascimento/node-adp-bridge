@@ -30,19 +30,27 @@
             }
         },
         "amqp": {
-            "sub": {
-                "merchant": {
-                    "topic": "q-merchants",
-                    "consumer": "c-merchant"
-                },
-                "seller": {
-                    "topic": "q-sellers",
-                    "consumer": "c-seller"
-                }
-            },
-            "pub": {
-                "account": {
-                    "topic": "q-accounts"
+            "rabbitMq": {
+                "retryPolicy": "exit",
+                "topics": {
+                    "sub": {
+                        "merchant": {
+                            "connectionString": "amqp://guest:guest@js-rabbit-mq:5672",
+                            "topicName": "q-merchants",
+                            "subName": "c-merchant"
+                        },
+                        "seller": {
+                            "connectionString": "amqp://guest:guest@js-rabbit-mq:5672",
+                            "topicName": "q-sellers",
+                            "subName": "c-seller"
+                        }
+                    },
+                    "pub": {
+                        "account": {
+                            "connectionString": "amqp://guest:guest@js-rabbit-mq:5672",
+                            "topicName": "q-accounts"
+                        }
+                    }
                 }
             }
         }
