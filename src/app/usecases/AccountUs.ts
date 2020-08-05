@@ -27,6 +27,12 @@ export async function enrichAccount(acc: Account, repo: AccountDataHandler): Pro
         if(merAcc && !(merAcc instanceof Error)) acc.setMerchantAccounts([merAcc])
     } else if(acc.type === AccountType.MERCHANT) {
         //TODO: make merchant async calls
+        const results = await safeResolvePromises([
+            repo.getMerchantAccounts(acc.id)
+        ])
+
+        let merAccs = results[0]
+        if(merAccs && !(merAccs instanceof Error)) acc.setMerchantAccounts(merAccs)
     }
 
     return acc

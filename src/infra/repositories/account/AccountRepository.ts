@@ -51,4 +51,8 @@ export default class AccountRepository extends Loggable implements AccountDataHa
     public async getMerchantAccount(id: string): Promise<MerchantAccount> {
         return await MerchantAccountsClient.getAccount(id)
     }
+    
+    public async getMerchantAccounts(merchantId: string): Promise<MerchantAccount[]> {
+        return await MerchantAccountsClient.getByMerchant(merchantId)
+    }
 }

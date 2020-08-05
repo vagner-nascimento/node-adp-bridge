@@ -53,6 +53,46 @@ class MerchantAccountsClient extends HttpClient {
             throw new ApplicationError(errMsg)
         }
     }
+
+    public async getByMerchant(merchant_id: string): Promise<MerchantAccount[]> {
+        const req = {
+            params: { merchant_id },
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }
+
+        const errMsg = 'an error occurred on try to get Merchant Accounts'
+
+        try {
+            const res = await super.get(req)
+            if(res.status === httpStatus.NO_CONTENT) {
+                this.logInfo(`returned ${res.status} without data`, null, this.getAccount.name)
+
+                return []
+            }
+
+            if(isRequestFailed(res.status)) {
+                if(res.status === httpStatus.NOT_FOUND) return null
+
+                this.logError(errMsg, res.error, this.getAccount.name)
+
+                throw new ApplicationError(errMsg)
+            }
+
+            if(!Array.isArray(res.data)) {
+                this.logInfo('unexpected non array response: ', res.data, this.getByMerchant.name)
+
+                throw new ApplicationError(errMsg)
+            }
+
+            return res.data.map(d => new MerchantAccount(d))
+        } catch(err) {
+            this.logError(errMsg, err, this.getAccount.name)
+
+            throw new ApplicationError(errMsg)
+        }
+    }
 }
 
 export default new MerchantAccountsClient()
