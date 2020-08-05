@@ -4,7 +4,7 @@ import AccountDataHandler from '../handlers/AccountDataHandler'
 
 import Account from '../types/Account'
 
-import { createAccount } from '../usecases/AccountUs'
+import { createAccount, enrichAccount } from '../usecases/AccountUs'
 
 export default class AccountAdapter implements AccountAdpHandler {
     constructor(repository: AccountDataHandler) {
@@ -14,7 +14,8 @@ export default class AccountAdapter implements AccountAdpHandler {
     private repository: AccountDataHandler
 
     public async addAccount(entity: any): Promise<Account> {
-        const acc = createAccount(entity)
+        let acc = createAccount(entity)
+        acc = await enrichAccount(acc, this.repository)
 
         return await this.repository.save(acc)
     }

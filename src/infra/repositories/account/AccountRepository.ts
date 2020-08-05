@@ -6,7 +6,11 @@ import Loggable from '../../logging/Loggable'
 
 import AmqpPublisger from '../../data/amqp/AmqpPublisher'
 
+import MerchantAccountsClient from '../../../integration/http/merchant/MerchantAccountsClient'
+
 import config from '../../../../config'
+
+import MerchantAccount from '../../../app/types/MerchantAccount'
 
 export default class AccountRepository extends Loggable implements AccountDataHandler {
     constructor() {
@@ -42,5 +46,9 @@ export default class AccountRepository extends Loggable implements AccountDataHa
         await this.pub.publish(this.topicName, JSON.stringify(acc))
 
         return acc
+    }
+
+    public async getMerchantAccount(id: string): Promise<MerchantAccount> {
+        return await MerchantAccountsClient.getAccount(id)
     }
 }

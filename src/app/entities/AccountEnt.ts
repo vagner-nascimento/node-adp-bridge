@@ -1,7 +1,7 @@
 import Merchant from '../types/Merchant'
 import Account from '../types/Account'
 import Seller from '../types/Seller'
-import AccountType from '../types/AccountTypeEnum'
+import AccountType from '../types/AccountType'
 
 export function createAccountFromMerchant(mer: Merchant): Account {
     return Account
