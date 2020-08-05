@@ -12,19 +12,19 @@ export default class AmqpRepository extends Loggable implements AmqpSubHandler {
 
         this.subConnStr = subConnStr;
         this.subQueueInfo = { durable: false, autoDelete: false, exclusive: false };
-        this.subcMsgInfo = { noAck: true, exclusive: false, noLocal: false };
+        this.subMsgInfo = { noAck: true, exclusive: false, noLocal: false };
     }
 
     private subConnStr: string
     private subQueueInfo: any // TODO: create a type queue and msg info
-    private subcMsgInfo: any
+    private subMsgInfo: any
 
     public async subscribeConsumer(topic: string, consumer: string, onSuccess: (req: any) => Promise<void>, onError: (err: Error) => void): Promise<void> {
         try {
             // TODO: make a class to handle channels and consume msgs
             const ch = await AmqpSubConnection.getChannel(this.subConnStr);
             
-            let consumerMsgInfo = Object.assign({}, this.subcMsgInfo);
+            let consumerMsgInfo = Object.assign({}, this.subMsgInfo);
             consumerMsgInfo = Object.assign(consumerMsgInfo, { consumerTag: consumer });
 
             await ch.assertQueue(topic, this.subQueueInfo);

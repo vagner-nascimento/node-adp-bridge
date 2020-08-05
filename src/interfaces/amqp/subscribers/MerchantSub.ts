@@ -7,6 +7,7 @@ import config from '../../../../config';
 import { getAccountAdapter } from '../../../provider';
 
 import AccountAdpHandler from '../../../app/handlers/AccountAdpHandler';
+
 import Merchant from '../../../app/types/Merchant';
 
 class MerchantSub implements Subscriber {  
