@@ -1,4 +1,4 @@
-import config from '../../../config';
+import config from '../../../config'
 
 class Logger {
     constructor() {
@@ -7,26 +7,26 @@ class Logger {
 
     private getLogger(conf: any): Logger {
         const logInfo = (msg: string): void => {
-            console.info(`${this.constructor.name} - ${msg}`);
+            console.info(`${this.constructor.name} - ${msg}`)
         }
 
         if(['LOCAL', 'DOCKER'].includes(conf.env)) {
-            logInfo(`loading "${conf.env}": CONSOLE logger`);
+            logInfo(`loading "${conf.env}": CONSOLE logger`)
 
-            return this; 
+            return this 
         }
         
-        logInfo(`loading "${conf.env}" APP logger`);
+        logInfo(`loading "${conf.env}" APP logger`)
 
-        return this; // TODO: return app logger (like grafana or winston)
+        return this // TODO: return app logger (like grafana or winston)
     }
 
     public error(msg: string, err: Error = null): void {
-        console.error(this.getFormattedMsg(msg), err ? err : '');
+        console.error(this.getFormattedMsg(msg), err ? err : '')
     }
 
     public info(msg: string, data: any = null): void {
-        console.info(this.getFormattedMsg(msg), this.getStrData(data));
+        console.info(this.getFormattedMsg(msg), this.getStrData(data))
     }
 
     public warn(msg: string, data: any = null): void {
@@ -34,12 +34,12 @@ class Logger {
     }    
 
     private getFormattedMsg(msg: string): string {
-        return `${new Date().toISOString()} - ${msg}`;
+        return `${new Date().toISOString()} - ${msg}`
     }
 
     private getStrData(data: any = null): string {
-        return data ? JSON.stringify(data) : '';
+        return data ? JSON.stringify(data) : ''
     }
 }
 
-export default new Logger();
+export default new Logger()

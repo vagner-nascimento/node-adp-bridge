@@ -20,7 +20,8 @@
         "linebreak-style": ["error", "unix"],
         "quotes": ["error", "single"],
         "mocha-no-only/mocha-no-only": ["error"],
-        "semi": "error"
+        "semi": ["error", "never"],
+        "no-unexpected-multiline": "error"
     },
     "plugins": [
         "@typescript-eslint",

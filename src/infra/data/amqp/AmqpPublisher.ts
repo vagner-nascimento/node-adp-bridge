@@ -1,10 +1,10 @@
-import amqplib from 'amqplib';
+import amqplib from 'amqplib'
 
-import AmqpPubConnection from './AmqpPubConnection';
+import AmqpPubConnection from './AmqpPubConnection'
 
-import Loggable from '../../logging/Loggable';
+import Loggable from '../../logging/Loggable'
 
-import ApplicationError from '../../../error/ApplicationError';
+import ApplicationError from '../../../error/ApplicationError'
 
 export default class AmqpPublisger extends Loggable{
     constructor(connStr: string) {
@@ -21,14 +21,14 @@ export default class AmqpPublisger extends Loggable{
     
 
     public async publish(queue: string, data: any): Promise<void> {
-        const ch: amqplib.Channel = await AmqpPubConnection.getNewChannel(this.connStr);
+        const ch: amqplib.Channel = await AmqpPubConnection.getNewChannel(this.connStr)
         
         this.logInfo(`data to send to topic ${queue}:`, data)
 
         try {
             await ch.assertQueue(queue, this.queueInfo)
             await ch.sendToQueue(queue, Buffer.from(data), this.msgInfo)
-            await ch.close();
+            await ch.close()
         } catch(err) {
             const msg = `error on try to publish data into ${queue}`
 

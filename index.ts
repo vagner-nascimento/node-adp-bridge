@@ -1,10 +1,10 @@
-// TODO: realise how to call from "NODE_PATH=.", F.I: import loadApp from 'src/loader';
+// TODO: realise how to call from "NODE_PATH=.", F.I: import loadApp from 'src/loader'
 // TODO: add rest mock
-import loadApp from './src/loader';
+import loadApp from './src/loader'
 
 loadApp()
     .then(() => console.log('application loaded'))
     .catch((error) => {
-        console.error('apllication cannot be loaded', error.stack);
-        process.exit(1);
-    });
+        console.error('apllication cannot be loaded', error.stack)
+        process.exit(1)
+    })

@@ -1,5 +1,5 @@
-import Contact from "./Contact"
-import AccountType from "./AccountTypeEnum"
+import Contact from './Contact'
+import AccountType from './AccountTypeEnum'
 
 export default class Account {
     private constructor(type: AccountType) {

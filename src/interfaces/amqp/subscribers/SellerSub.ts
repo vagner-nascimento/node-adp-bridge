@@ -1,14 +1,14 @@
-import Subscriber from './Subscriber';
+import Subscriber from './Subscriber'
 
-import logger from '../../../infra/logging/Logger';
+import logger from '../../../infra/logging/Logger'
 
-import config from '../../../../config';
+import config from '../../../../config'
 
 import { getAccountAdapter } from '../../../provider'
-;
-import AccountAdpHandler from '../../../app/handlers/AccountAdpHandler';
 
-import Seller from '../../../app/types/Seller';
+import AccountAdpHandler from '../../../app/handlers/AccountAdpHandler'
+
+import Seller from '../../../app/types/Seller'
 
 class SellerSub implements Subscriber {
     constructor() {
@@ -29,33 +29,33 @@ class SellerSub implements Subscriber {
                     }
                 }
             }
-        } = config;
+        } = config
 
-        this.connStr = connectionString;
-        this.topic = topicName;
-        this.consumer = subName;
-        this.autoComplete = autoComplete;
+        this.connStr = connectionString
+        this.topic = topicName
+        this.consumer = subName
+        this.autoComplete = autoComplete
     }
 
-    private connStr: string;
-    private topic: string;
-    private consumer: string;
-    private autoComplete: boolean;
+    private connStr: string
+    private topic: string
+    private consumer: string
+    private autoComplete: boolean
 
     public getConnStr(): string {
-        return this.connStr;
+        return this.connStr
     }
 
     public getTopic(): string {
-        return this.topic;
+        return this.topic
     }
 
     public getConsumer(): string {
-        return this.consumer;
+        return this.consumer
     }
 
     public getAutoComplete(): boolean {
-        return this.autoComplete;
+        return this.autoComplete
     }
 
     public async handleMessage(msg: any): Promise<void> {
@@ -72,14 +72,14 @@ class SellerSub implements Subscriber {
 
             logMsg('message data', data)
 
-            const sell = new Seller(data);
+            const sell = new Seller(data)
             const acc = await accAdp.addAccount(sell)
             
             logMsg('account added', acc)
         } catch(err) {
-            logMsg('error', err);
+            logMsg('error', err)
         }
     }
 }
 
-export default new SellerSub();
+export default new SellerSub()

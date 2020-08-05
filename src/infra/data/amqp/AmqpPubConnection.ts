@@ -1,54 +1,54 @@
-import amqplib from 'amqplib';
+import amqplib from 'amqplib'
 
-import Loggable from '../../logging/Loggable';
+import Loggable from '../../logging/Loggable'
 
-import ApplicationError from '../../../error/ApplicationError';
+import ApplicationError from '../../../error/ApplicationError'
 
 export default class AmqpPubConnection extends Loggable {
     private constructor() {
-        super(AmqpPubConnection.name);
+        super(AmqpPubConnection.name)
 
-        this.conns = new Map();
+        this.conns = new Map()
     }
 
-    private conns: Map<string, any>;
-    private static instance: AmqpPubConnection; 
+    private conns: Map<string, any>
+    private static instance: AmqpPubConnection 
 
     public static async getNewChannel(connStr: string): Promise<amqplib.Channel> {
         if(!AmqpPubConnection.instance) {
-            AmqpPubConnection.instance = new AmqpPubConnection();
+            AmqpPubConnection.instance = new AmqpPubConnection()
         }
         
-        let conn = AmqpPubConnection.instance.conns.get(connStr);
+        let conn = AmqpPubConnection.instance.conns.get(connStr)
         if(!conn) {
-            conn = await AmqpPubConnection.instance.connect(connStr);
-            AmqpPubConnection.instance.conns.set(connStr, conn);
+            conn = await AmqpPubConnection.instance.connect(connStr)
+            AmqpPubConnection.instance.conns.set(connStr, conn)
         }
 
-        return await AmqpPubConnection.instance.createChannel(conn);
+        return await AmqpPubConnection.instance.createChannel(conn)
     }
 
     private async connect(connStr: string): Promise<any> {
         try {
             this.logInfo('connecting into AMQP server')
 
-            const conn = await amqplib.connect(connStr);
+            const conn = await amqplib.connect(connStr)
 
             this.logInfo('successfully connected into AMQP server')            
 
             conn.connection.on('close', err => {
-                const msg = 'AMQP connection CLOSED';
+                const msg = 'AMQP connection CLOSED'
                 
-                this.logError(msg, err);                
-            });
+                this.logError(msg, err)                
+            })
 
             conn.connection.on('error', err => {
-                const msg = 'AMQP connection ERROR';
+                const msg = 'AMQP connection ERROR'
 
-                this.logError(msg, err);
-            });
+                this.logError(msg, err)
+            })
 
-            return conn;
+            return conn
         } catch(err) {
             const msg = `error on try to connect into amqp server`
 
@@ -62,12 +62,12 @@ export default class AmqpPubConnection extends Loggable {
         try {
             this.logInfo('creating a new AMQP channel')
 
-            return await conn.createChannel();
+            return await conn.createChannel()
         } catch(err) {
-            const msg = 'error on create a new AMQP channel';
+            const msg = 'error on create a new AMQP channel'
             this.logError(msg, err)
 
-            throw new ApplicationError(msg);
+            throw new ApplicationError(msg)
         }
     }
 }

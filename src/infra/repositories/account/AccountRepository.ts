@@ -1,12 +1,12 @@
-import AccountDataHandler from '../../../app/handlers/AccountDataHandler';
+import AccountDataHandler from '../../../app/handlers/AccountDataHandler'
 
-import Account from '../../../app/types/Account';
+import Account from '../../../app/types/Account'
 
-import Loggable from '../../logging/Loggable';
+import Loggable from '../../logging/Loggable'
 
-import AmqpPublisger from '../../data/amqp/AmqpPublisher';
+import AmqpPublisger from '../../data/amqp/AmqpPublisher'
 
-import config from '../../../../config';
+import config from '../../../../config'
 
 export default class AccountRepository extends Loggable implements AccountDataHandler {
     constructor() {

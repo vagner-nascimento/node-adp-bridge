@@ -1,10 +1,10 @@
-import { Router as newRouter } from "express"
-import bodyParser from "body-parser"
-import compression from "compression"
-import methOveride from "method-override"
+import { Router as newRouter } from 'express'
+import bodyParser from 'body-parser'
+import compression from 'compression'
+import methOveride from 'method-override'
 
 const healthChkRes = (req, res): void => {
-    res.status(200).json({ status: "OK", checks: [] })
+    res.status(200).json({ status: 'OK', checks: [] })
 }
 
 const apiRouter = newRouter()
