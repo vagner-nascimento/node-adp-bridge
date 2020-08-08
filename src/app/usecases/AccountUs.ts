@@ -9,6 +9,8 @@ import AccountType from '../types/AccountType'
 import ApplicationError from '../../error/ApplicationError'
 
 import AccountDataHandler from '../handlers/AccountDataHandler'
+import MerchantAccount from '../types/MerchantAccount'
+import Affiliation from '../types/Affiliation'
 
 export function createAccount(entity: any): Account {
     if(entity instanceof Merchant) return createAccountFromMerchant(entity)
@@ -17,22 +19,29 @@ export function createAccount(entity: any): Account {
 }
 
 export async function enrichAccount(acc: Account, repo: AccountDataHandler): Promise<Account> {
+    //TODO: move specif enrichments to its properly use cases
     if(acc.type === AccountType.SELLER) {
-        //TODO: add more async calls
         const results = await safeResolvePromises([
-            repo.getMerchantAccount(acc.merchant_account_id)
+            repo.getMerchantAccount(acc.merchant_account_id),
+            repo.getMerchant(acc.merchant_id)
         ])
 
-        let merAcc = results[0]
+        let merAcc: MerchantAccount = results[0]
+        let mer: Merchant = results[1]
+
         if(merAcc && !(merAcc instanceof Error)) acc.setMerchantAccounts([merAcc])
+        if(mer && !(mer instanceof Error)) acc.setCountry(mer.country)
     } else if(acc.type === AccountType.MERCHANT) {
-        //TODO: make merchant async calls
         const results = await safeResolvePromises([
-            repo.getMerchantAccounts(acc.id)
+            repo.getMerchantAccounts(acc.id),
+            repo.getAffiliation(acc.id)
         ])
 
-        let merAccs = results[0]
+        let merAccs: MerchantAccount[] = results[0]
+        let aff: Affiliation = results[1]
+
         if(merAccs && !(merAccs instanceof Error)) acc.setMerchantAccounts(merAccs)
+        if(aff && !(aff instanceof Error)) acc.setLegalDocument(aff.legal_document)
     }
 
     return acc

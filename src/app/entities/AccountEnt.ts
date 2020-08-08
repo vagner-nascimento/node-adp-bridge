@@ -8,6 +8,10 @@ export function createAccountFromMerchant(mer: Merchant): Account {
         .build(AccountType.MERCHANT)
         .setId(mer.id)
         .setName(mer.name)
+        .setCountry(mer.country)
+        .setBillingDay(mer.billing_day)
+        .setIsActive(mer.is_active)
+        .setCreditLimit(mer.credit_limit)
 }
 
 export function createAccountFromSeller(sell: Seller): Account {
@@ -15,6 +19,8 @@ export function createAccountFromSeller(sell: Seller): Account {
         .build(AccountType.SELLER)
         .setId(sell.id)
         .setName(sell.name)
+        .setLegalDocument(sell.legal_document)
+        .setIsActive(sell.is_active)
         .setMerchantId(sell.merchant_id)
         .setMerchantAccountId(sell.merchant_account_id)
         .setContacts(sell.contacts)

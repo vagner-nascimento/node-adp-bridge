@@ -24,31 +24,36 @@ export default abstract class HttpClient extends Loggable {
         return await this.doRequest(HttpMethod.GET, headers, url, params)
     }
 
-
     private async doRequest(
         method: HttpMethod,
-        headers: any = null,
-        url: string = null,
-        params: any = null,
-        data: any = null
+        headers?: any,
+        url?: string,
+        params?: any,
+        data?: any
     ): Promise<any> {
         try {
             return await this.axiosRequest({ method, headers, url, params, data })
-        } catch(error) {
-            const completeUrl = `${this.axiosRequest.defaults.baseURL}${url || ""}` +
-                `${params ? "/" + Object.entries(params).map(([k, v]) => `${k}=${v}`).join("&") : ""}`
-
-            logger.error(`HttpClient - error on call ${method} - ${completeUrl}: `, error)
-
+        } catch(err) {
+            let error = err
             let status = null
 
-            if(error.isAxiosError)
-                if(error.response) status = error.response.status
+            if(err.isAxiosError)
+                if(err.response) {
+                     status = err.response.status
+                     error = err.response
+                }
                 else status = httpStatus.SERVICE_UNAVAILABLE
             else
-                status = httpStatus.INTERNAL_SERVER_ERROR            
+                status = httpStatus.INTERNAL_SERVER_ERROR
+
+            logger.error(`${HttpClient.name} - error on call ${method} - ${this.getCompleteReqUrl(params, url)}`, error)
 
             return { error, status, data: null }
         }
+    }
+
+    private getCompleteReqUrl(params?: any, url?: string): string {
+        return `${this.axiosRequest.defaults.baseURL}${url || "/"}` +
+        `${params ? "/" + Object.entries(params).map(([k, v]) => `${k}=${v}`).join("&") : ""}`
     }
 }

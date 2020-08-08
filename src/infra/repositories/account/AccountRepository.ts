@@ -1,16 +1,19 @@
-import AccountDataHandler from '../../../app/handlers/AccountDataHandler'
+import config from '../../../../config'
 
-import Account from '../../../app/types/Account'
+import AccountDataHandler from '../../../app/handlers/AccountDataHandler'
 
 import Loggable from '../../logging/Loggable'
 
 import AmqpPublisger from '../../data/amqp/AmqpPublisher'
 
 import MerchantAccountsClient from '../../../integration/http/merchant/MerchantAccountsClient'
+import MerchantsClient from '../../../integration/http/merchant/MerchantsClient'
+import AffiliationsClient from '../../../integration/http/affiliation/AffiliationsClient'
 
-import config from '../../../../config'
-
+import Account from '../../../app/types/Account'
 import MerchantAccount from '../../../app/types/MerchantAccount'
+import Merchant from '../../../app/types/Merchant'
+import Affiliation from '../../../app/types/Affiliation'
 
 export default class AccountRepository extends Loggable implements AccountDataHandler {
     constructor() {
@@ -48,11 +51,19 @@ export default class AccountRepository extends Loggable implements AccountDataHa
         return acc
     }
 
+    public async getMerchant(id: string): Promise<Merchant> {
+        return await MerchantsClient.getMerchant(id)
+    }
+
     public async getMerchantAccount(id: string): Promise<MerchantAccount> {
         return await MerchantAccountsClient.getAccount(id)
     }
     
     public async getMerchantAccounts(merchantId: string): Promise<MerchantAccount[]> {
         return await MerchantAccountsClient.getByMerchant(merchantId)
+    }
+
+    public async getAffiliation(id: string): Promise<Affiliation> {
+        return await AffiliationsClient.getAffiliation(id)
     }
 }

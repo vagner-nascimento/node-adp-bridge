@@ -12,7 +12,7 @@ const getLogger = (): Logger => {
         if(['LOCAL', 'DOCKER'].includes(config.env)) singleLogger = new ConsoleLogger()
         else singleLogger = new GrafanaLogger()
 
-        singleLogger.info(`using ${singleLogger.constructor.name} logger`)
+        singleLogger.info(`LOGGER - using ${singleLogger.constructor.name}`)
     }
 
     return singleLogger
