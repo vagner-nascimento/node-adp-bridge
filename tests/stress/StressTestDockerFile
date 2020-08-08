@@ -1,0 +1,26 @@
+FROM golang:alpine
+
+ENV GO111MODULE=on \
+    CGO_ENABLED=0 \
+    GOOS=linux \
+    GOARCH=amd64 \
+    GO_ENV=DOCKER
+
+WORKDIR /app
+
+COPY ["./wait-for.sh", "./tests/stress/stresstest.go", "./tests/stress/go.mod", "./tests/stress/go.sum", "/app/"]
+
+RUN mkdir /support && mkdir /support/mocks
+
+COPY ["./tests/support/mocks/*.json", "/app/support/mocks/"]
+
+# Build app
+RUN go mod download
+RUN go build -o main .
+
+# Install bash to wait-for-it script
+RUN apk update && apk add bash
+
+# Move app startup script to its properly folder
+RUN mkdir /scripts
+COPY ["./wait-for.sh", "/scripts"]

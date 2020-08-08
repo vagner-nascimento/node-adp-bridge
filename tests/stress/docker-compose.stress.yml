@@ -1,0 +1,49 @@
+version: '3.7'
+
+services:
+  go-producer:
+    container_name: go-producer
+    build:
+      context: ../..
+      dockerfile: ./tests/stress/StressTestDockerFile
+    depends_on:
+      - js-rabbit-mq
+    environment:
+      - GO_ENV=DOCKER
+      - QTD_SELL=25000
+      - QTD_MERCH=25000
+      - MINUTES_TIMEOUT=30
+    networks:
+      - js-network
+    command: >
+      bash -c "/scripts/wait-for.sh -s -t 30 js-rabbit-mq:5672 -- /app/main"
+
+  js-rabbit-mq:
+    container_name: js-rabbit-mq
+    image: rabbitmq:3.6-management-alpine
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - rabitmq:/etc/rabbitmq/
+    networks:
+      - js-network
+
+  js-rest-mock:
+    container_name: js-rest-mock
+    image: vimagick/json-server
+    command: -H 0.0.0.0 -p 4000 -w db.json
+    ports:
+      - 4000:4000
+    volumes:
+      - ../../json-server-mock:/data
+    restart: unless-stopped
+    networks:
+      - js-network
+
+volumes:
+  rabitmq:
+    
+networks:
+  js-network:
+    driver: bridge
