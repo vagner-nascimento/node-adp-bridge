@@ -5,7 +5,7 @@ import { Agent as HttpsAgent } from 'https'
 import HttpMethod from './HttpMethod'
 
 import Loggable from '../../infra/logging/Loggable'
-import logger from '../../infra/logging/Logger'
+import logger from '../../infra/logging'
 
 export default abstract class HttpClient extends Loggable {
     constructor({ baseUrl: baseURL, timeout = 10000, rejectUnauthorized = false }, childClassName) {

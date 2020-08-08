@@ -1,7 +1,7 @@
 import { loadEnvironment } from '../../config/ConfigLoader'
 const conf = loadEnvironment()
 
-import logger from '../infra/logging/Logger'
+import logger from '../infra/logging'
 
 import { startHttpServer } from '../interfaces/http'
 

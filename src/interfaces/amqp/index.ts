@@ -1,6 +1,6 @@
 import config from '../../../config'
 
-import logger from '../../infra/logging/Logger'
+import logger from '../../infra/logging'
 
 import Subscriber from './subscribers/Subscriber'
 
