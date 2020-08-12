@@ -20,12 +20,13 @@ class AmqpPublisher extends Loggable {
     private queueInfo: any
     private msgInfo: any
 
+    // TODO: realise how to use one cahnnel by thread
     public async publish(queue: string, data: any): Promise<void> {
         if(!this.conn) this.connect()
 
         try {
             const ch = await this.conn.createChannel()
-            
+
             await ch.assertQueue(queue, this.queueInfo)
             await ch.sendToQueue(queue, Buffer.from(data), this.msgInfo)
             await ch.close()
