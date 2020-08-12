@@ -59,6 +59,8 @@ export default class SellerSub implements Subscriber {
     }
 
     public getHandler(): (message: any) => Promise<any> {
+        const accAdp: AccountAdpHandler = getAccountAdapter()
+        
         return async (message: any) => {
             const logMsg = (msg: string, data: any) => {
                 msg = `${SellerSub.name} - ${msg}`
@@ -66,7 +68,6 @@ export default class SellerSub implements Subscriber {
                 else logger.info(msg, data)
             }
     
-            const accAdp: AccountAdpHandler = getAccountAdapter()
     
             try {
                 const data = JSON.parse(message.content)

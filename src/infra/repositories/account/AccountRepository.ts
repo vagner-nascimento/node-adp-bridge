@@ -4,8 +4,6 @@ import AccountDataHandler from '../../../app/handlers/AccountDataHandler'
 
 import Loggable from '../../logging/Loggable'
 
-import AmqpPublisger from '../../data/amqp/AmqpPublisher'
-
 import MerchantAccountsClient from '../../../integration/http/merchant/MerchantAccountsClient'
 import MerchantsClient from '../../../integration/http/merchant/MerchantsClient'
 import AffiliationsClient from '../../../integration/http/affiliation/AffiliationsClient'
@@ -14,6 +12,8 @@ import Account from '../../../app/types/Account'
 import MerchantAccount from '../../../app/types/MerchantAccount'
 import Merchant from '../../../app/types/Merchant'
 import Affiliation from '../../../app/types/Affiliation'
+
+import AmqpPublisher from '../../data/amqp/AmqpPublisher'
 
 export default class AccountRepository extends Loggable implements AccountDataHandler {
     constructor() {
@@ -26,7 +26,6 @@ export default class AccountRepository extends Loggable implements AccountDataHa
                         topics: {
                             pub: {
                                 account: {
-                                    connectionString,
                                     topicName
                                 }
                             }
@@ -36,17 +35,15 @@ export default class AccountRepository extends Loggable implements AccountDataHa
             }
         } = config
 
-        this.pub = new AmqpPublisger(connectionString)
         this.topicName = topicName
     }
 
-    private pub: AmqpPublisger
     private topicName: string
 
     public async save(acc: Account): Promise<Account> {
         this.logInfo('account to be saved', acc)
         
-        await this.pub.publish(this.topicName, JSON.stringify(acc))
+        await AmqpPublisher.publish(this.topicName, JSON.stringify(acc))
 
         return acc
     }

@@ -1,40 +1,15 @@
 import AmqpSubHandler from '../../interfaces/amqp/AmqpSubHandler'
 
-import AmqpSubConnection from '../data/amqp/AmqpSubConnection'
-
 import Loggable from '../logging/Loggable'
 
-import ApplicationError from '../../error/ApplicationError'
+import AmqpSubscriber from '../data/amqp/AmqpSubscriber'
 
 export default class AmqpRepository extends Loggable implements AmqpSubHandler {
-    constructor(subConnStr: string) {
+    constructor() {
         super(AmqpRepository.name)
-
-        this.subConnStr = subConnStr
-        this.subQueueInfo = { durable: false, autoDelete: false, exclusive: false }
-        this.subMsgInfo = { noAck: true, exclusive: false, noLocal: false }
     }
 
-    private subConnStr: string
-    private subQueueInfo: any // TODO: create a type queue and msg info
-    private subMsgInfo: any
-
-    public async subscribeConsumer(topic: string, consumer: string, onSuccess: (req: any) => Promise<void>, onError: (err: Error) => void): Promise<void> {
-        try {
-            // TODO: make a class to handle channels and consume msgs
-            const ch = await AmqpSubConnection.getChannel(this.subConnStr)
-            
-            let consumerMsgInfo = Object.assign({}, this.subMsgInfo)
-            consumerMsgInfo = Object.assign(consumerMsgInfo, { consumerTag: consumer })
-
-            await ch.assertQueue(topic, this.subQueueInfo)
-            await ch.consume(topic, onSuccess, consumerMsgInfo)
-        } catch(err) {
-            const msg = `error on consume topic "${topic}" with consumer "${consumer}"`
-            
-            this.logError(msg, err)
-
-            await onError(new ApplicationError(msg))
-        }
+    public async subscribeConsumer(topic: string, consumer: string, handler: (req: any) => Promise<any>): Promise<void> {
+        await AmqpSubscriber.subscribeConsumer(topic, consumer, handler)
     }
 }

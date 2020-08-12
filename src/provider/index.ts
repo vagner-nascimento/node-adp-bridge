@@ -8,8 +8,8 @@ import AccountAdapter from '../app/adapters/AccountAdapter'
 
 import AccountRepository from '../infra/repositories/account/AccountRepository'
 
-export function getAmqpSubHandler(connStr: string): AmqpSubHandler {
-    return new AmqpRepository(connStr)
+export function getAmqpSubHandler(): AmqpSubHandler {
+    return new AmqpRepository()
 }
 
 export function getAccountAdapter(): AccountAdpHandler {

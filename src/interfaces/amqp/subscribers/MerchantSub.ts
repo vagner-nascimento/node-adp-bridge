@@ -59,14 +59,14 @@ export default class MerchantSub implements Subscriber {
     }
 
     public getHandler(): (message: any) => Promise<any> {
+        const accAdp: AccountAdpHandler = getAccountAdapter()
+
         return async (message: any) => {
             const logMsg = (msg: string, data: any) => {
                 msg = `${MerchantSub.name} - ${msg}`
                 if(data instanceof Error) logger.error(msg, data)
                 else logger.info(msg, data)
             }
-
-            const accAdp: AccountAdpHandler = getAccountAdapter()
 
             try {
                 const data = JSON.parse(message.content)
