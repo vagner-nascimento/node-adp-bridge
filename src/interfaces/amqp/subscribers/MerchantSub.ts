@@ -10,7 +10,7 @@ import AccountAdpHandler from '../../../app/handlers/AccountAdpHandler'
 
 import Merchant from '../../../app/types/Merchant'
 
-class MerchantSub implements Subscriber {  
+export default class MerchantSub implements Subscriber {  
     constructor() {
         const {
             integration: {
@@ -58,28 +58,28 @@ class MerchantSub implements Subscriber {
         return this.autoComplete
     }
 
-    public async handleMessage(msg: any): Promise<void> {
-        const logMsg = (msg: string, data: any) => {
-            msg = `${MerchantSub.name} - ${msg}`
-            if(data instanceof Error) logger.error(msg, data)
-            else logger.info(msg, data)
-        }
+    public getHandler(): (message: any) => Promise<any> {
+        return async (message: any) => {
+            const logMsg = (msg: string, data: any) => {
+                msg = `${MerchantSub.name} - ${msg}`
+                if(data instanceof Error) logger.error(msg, data)
+                else logger.info(msg, data)
+            }
 
-        const accAdp: AccountAdpHandler = getAccountAdapter()
+            const accAdp: AccountAdpHandler = getAccountAdapter()
 
-        try {
-            const data = JSON.parse(msg.content)
+            try {
+                const data = JSON.parse(message.content)
 
-            logMsg('message data', data)
+                logMsg('message data', data)
 
-            const merch = new Merchant(data)
-            const acc = await accAdp.addAccount(merch)
-            
-            logMsg('account added', acc)
-        } catch(err) {
-            logMsg('error', err)
+                const mer = new Merchant(data)
+                const acc = await accAdp.addAccount(mer)
+                
+                logMsg('account added', acc)
+            } catch(err) {
+                logMsg('error', err)
+            }
         }
     }
 }
-
-export default new MerchantSub()

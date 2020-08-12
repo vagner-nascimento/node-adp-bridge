@@ -3,5 +3,5 @@ export default interface Subscriber {
     getTopic(): string,
     getConsumer(): string,
     getAutoComplete(): boolean,
-    handleMessage(msgRequest: any): Promise<void>
+    getHandler(): (message: any) => Promise<any>
 }

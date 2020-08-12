@@ -10,7 +10,7 @@ import AccountAdpHandler from '../../../app/handlers/AccountAdpHandler'
 
 import Seller from '../../../app/types/Seller'
 
-class SellerSub implements Subscriber {
+export default class SellerSub implements Subscriber {
     constructor() {
         const {
             integration: {
@@ -58,28 +58,29 @@ class SellerSub implements Subscriber {
         return this.autoComplete
     }
 
-    public async handleMessage(msg: any): Promise<void> {
-        const logMsg = (msg: string, data: any) => {
-            msg = `${SellerSub.name} - ${msg}`
-            if(data instanceof Error) logger.error(msg, data)
-            else logger.info(msg, data)
+    public getHandler(): (message: any) => Promise<any> {
+        return async (message: any) => {
+            const logMsg = (msg: string, data: any) => {
+                msg = `${SellerSub.name} - ${msg}`
+                if(data instanceof Error) logger.error(msg, data)
+                else logger.info(msg, data)
+            }
+    
+            const accAdp: AccountAdpHandler = getAccountAdapter()
+    
+            try {
+                const data = JSON.parse(message.content)
+    
+                logMsg('message data', data)
+    
+                const sell = new Seller(data)
+                const acc = await accAdp.addAccount(sell)
+                
+                logMsg('account added', acc)
+            } catch(err) {
+                logMsg('error', err)
+            }
         }
 
-        const accAdp: AccountAdpHandler = getAccountAdapter()
-
-        try {
-            const data = JSON.parse(msg.content)
-
-            logMsg('message data', data)
-
-            const sell = new Seller(data)
-            const acc = await accAdp.addAccount(sell)
-            
-            logMsg('account added', acc)
-        } catch(err) {
-            logMsg('error', err)
-        }
     }
 }
-
-export default new SellerSub()

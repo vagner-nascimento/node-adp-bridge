@@ -34,7 +34,7 @@ export default class AmqpRepository extends Loggable implements AmqpSubHandler {
             
             this.logError(msg, err)
 
-            onError(new ApplicationError(msg))
+            await onError(new ApplicationError(msg))
         }
     }
 }

@@ -4,7 +4,7 @@ import SellerSub from './SellerSub'
 
 export function getSubscribers(): Subscriber[] {
     return [
-        MerchantSub,
-        SellerSub
+        new MerchantSub(),
+        new SellerSub()
     ]
 }

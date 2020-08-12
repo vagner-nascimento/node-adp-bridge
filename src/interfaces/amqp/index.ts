@@ -5,7 +5,6 @@ import logger from '../../infra/logging'
 import Subscriber from './subscribers/Subscriber'
 
 import AmqpSubHandler from './AmqpSubHandler'
-
 import { getSubscribers } from './subscribers'
 
 import { getAmqpSubHandler } from '../../provider'
@@ -30,22 +29,23 @@ const logMessage = (msg: string, err: Error = null): void => {
 const subscribe = async (sub: Subscriber): Promise<void> => {
     const subHandler: AmqpSubHandler = getAmqpSubHandler(sub.getConnStr())
 
+    // TODO: receive list of subs into SubHandler, like on Golang
     await subHandler.subscribeConsumer(
         sub.getTopic(),
         sub.getConsumer(),
-        sub.handleMessage,
+        sub.getHandler(),
         (err: Error) => {
-            logMessage('message error', err)
-                    
+        logMessage('message error', err)                    
             if(retryPolicy && retryPolicy.toLowerCase() === 'exit') {
                 logMessage('retry police is "exit": exiting application')
                 process.exit(1)
             }
 
             logMessage('retry police is NOT "exit": keep runnig the application')
-        })
+        }
+    )
 
-    logMessage(`consumer "${sub.getConsumer()}" subsribed into "${sub.getTopic()}" topic`)
+    logMessage(`consumer "${sub.getConsumer()}" subscribed into "${sub.getTopic()}" topic`)
 }
 
 export async function subscribeConsumers(): Promise<void> {
